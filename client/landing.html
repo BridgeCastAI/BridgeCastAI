@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BridgeCast AI — Real-Time Bidirectional Communication for All</title>
+  <meta name="description" content="BridgeCast AI bridges Deaf/Hard-of-Hearing and hearing participants in real-time using AI-powered sign language recognition, live captions, and intelligent meeting notes." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Pretendard', 'system-ui', 'sans-serif'],
+            display: ['Inter', 'Pretendard', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            accent: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#a78bfa',
+              600: '#8b5cf6',
+              700: '#7c3aed',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Iconify -->
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-family: 'Inter', 'Pretendard Variable', 'Pretendard', system-ui, sans-serif; }
+
+    /* --- Floating gradient blobs --- */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      pointer-events: none;
+      will-change: transform;
+    }
+    html:not(.dark) .blob { opacity: 0.06; }
+
+    .blob-purple {
+      background: radial-gradient(circle, #a78bfa 0%, transparent 70%);
+      animation: floatBlob1 18s ease-in-out infinite;
+    }
+    .blob-cyan {
+      background: radial-gradient(circle, #22d3ee 0%, transparent 70%);
+      animation: floatBlob2 22s ease-in-out infinite;
+    }
+    .blob-emerald {
+      background: radial-gradient(circle, #34d399 0%, transparent 70%);
+      animation: floatBlob3 20s ease-in-out infinite;
+    }
+    .blob-rose {
+      background: radial-gradient(circle, #fb7185 0%, transparent 70%);
+      animation: floatBlob4 24s ease-in-out infinite;
+    }
+
+    /* --- Hero icon animations --- */
+    @keyframes iconFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-8px) rotate(3deg); }
+      50% { transform: translateY(-4px) rotate(-2deg); }
+      75% { transform: translateY(-10px) rotate(2deg); }
+    }
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(167,139,250,0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 0 20px 8px rgba(167,139,250,0.15); }
+    }
+    @keyframes iconPulseCyan {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,211,238,0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 0 20px 8px rgba(34,211,238,0.15); }
+    }
+    @keyframes bridgePulse {
+      0%, 100% { opacity: 0.5; transform: scaleX(1); }
+      50% { opacity: 1; transform: scaleX(1.2); }
+    }
+    @keyframes transferSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .icon-float-violet {
+      animation: iconFloat 3s ease-in-out infinite, iconPulse 2.5s ease-in-out infinite;
+    }
+    .icon-float-cyan {
+      animation: iconFloat 3s ease-in-out infinite 0.5s, iconPulseCyan 2.5s ease-in-out infinite 0.3s;
+    }
+    .bridge-line {
+      animation: bridgePulse 2s ease-in-out infinite;
+    }
+    .transfer-icon {
+      animation: transferSpin 4s linear infinite;
+    }
+
+    @keyframes floatBlob1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(60px, -40px) scale(1.1); }
+      66% { transform: translate(-30px, 50px) scale(0.95); }
+    }
+    @keyframes floatBlob2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-50px, 30px) scale(1.05); }
+      66% { transform: translate(40px, -60px) scale(0.9); }
+    }
+    @keyframes floatBlob3 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(40px, 50px) scale(1.08); }
+      66% { transform: translate(-60px, -20px) scale(0.92); }
+    }
+    @keyframes floatBlob4 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-40px, -50px) scale(1.12); }
+      66% { transform: translate(50px, 30px) scale(0.88); }
+    }
+
+    /* --- Scroll reveal --- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger children delays */
+    .stagger-children > .reveal:nth-child(1) { transition-delay: 0ms; }
+    .stagger-children > .reveal:nth-child(2) { transition-delay: 80ms; }
+    .stagger-children > .reveal:nth-child(3) { transition-delay: 160ms; }
+    .stagger-children > .reveal:nth-child(4) { transition-delay: 240ms; }
+    .stagger-children > .reveal:nth-child(5) { transition-delay: 320ms; }
+    .stagger-children > .reveal:nth-child(6) { transition-delay: 400ms; }
+    .stagger-children > .reveal:nth-child(7) { transition-delay: 480ms; }
+    .stagger-children > .reveal:nth-child(8) { transition-delay: 560ms; }
+    .stagger-children > .reveal:nth-child(9) { transition-delay: 640ms; }
+    .stagger-children > .reveal:nth-child(10) { transition-delay: 720ms; }
+    .stagger-children > .reveal:nth-child(11) { transition-delay: 800ms; }
+    .stagger-children > .reveal:nth-child(12) { transition-delay: 880ms; }
+
+    /* --- Glass Card --- */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1rem;
+      transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+    }
+    .glass-card:hover {
+      transform: scale(1.02);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Light mode card */
+    html:not(.dark) .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    html:not(.dark) .glass-card:hover {
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Glow variants for hover */
+    .glow-violet:hover { box-shadow: 0 0 40px rgba(167, 139, 250, 0.15); }
+    .glow-emerald:hover { box-shadow: 0 0 40px rgba(52, 211, 153, 0.15); }
+    .glow-amber:hover { box-shadow: 0 0 40px rgba(251, 191, 36, 0.15); }
+    .glow-rose:hover { box-shadow: 0 0 40px rgba(251, 113, 133, 0.15); }
+    .glow-cyan:hover { box-shadow: 0 0 40px rgba(34, 211, 238, 0.15); }
+
+    html:not(.dark) .glow-violet:hover { box-shadow: 0 8px 40px rgba(167, 139, 250, 0.12); }
+    html:not(.dark) .glow-emerald:hover { box-shadow: 0 8px 40px rgba(52, 211, 153, 0.12); }
+    html:not(.dark) .glow-amber:hover { box-shadow: 0 8px 40px rgba(251, 191, 36, 0.12); }
+    html:not(.dark) .glow-rose:hover { box-shadow: 0 8px 40px rgba(251, 113, 133, 0.12); }
+    html:not(.dark) .glow-cyan:hover { box-shadow: 0 8px 40px rgba(34, 211, 238, 0.12); }
+
+    /* --- Nav link underline --- */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #a78bfa, #22d3ee);
+      transition: width 0.3s ease;
+      border-radius: 1px;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* --- Dark/Light mode transition --- */
+    body, .glass-card, nav, footer, section {
+      transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    }
+
+    /* --- Counter --- */
+    .stat-number { font-variant-numeric: tabular-nums; }
+
+    /* --- Progress bar --- */
+    .progress-bar-fill {
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 0%;
+    }
+
+    /* --- Bento grid --- */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .bento-grid .bento-wide { grid-column: span 2; }
+
+    @media (max-width: 1023px) {
+      .bento-grid { grid-template-columns: repeat(2, 1fr); }
+      .bento-grid .bento-wide { grid-column: span 2; }
+    }
+    @media (max-width: 639px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-grid .bento-wide { grid-column: span 1; }
+    }
+
+    /* --- Scrollbar --- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f9fafb; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    html.dark ::-webkit-scrollbar-track { background: #0a0e1a; }
+    html.dark ::-webkit-scrollbar-thumb { background: #374151; }
+    html.dark ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+    /* --- Team card --- */
+    .team-card { transition: transform 0.3s ease; }
+    .team-card:hover { transform: translateY(-6px); }
+
+    /* --- Hero gradient text --- */
+    .gradient-text {
+      background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    html:not(.dark) .gradient-text {
+      background: linear-gradient(135deg, #7c3aed 0%, #0891b2 50%, #059669 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* --- Mesh gradient overlay --- */
+    .mesh-gradient {
+      background-image:
+        radial-gradient(at 27% 37%, rgba(167, 139, 250, 0.08) 0px, transparent 50%),
+        radial-gradient(at 97% 21%, rgba(34, 211, 238, 0.06) 0px, transparent 50%),
+        radial-gradient(at 52% 99%, rgba(52, 211, 153, 0.05) 0px, transparent 50%),
+        radial-gradient(at 10% 29%, rgba(251, 113, 133, 0.04) 0px, transparent 50%);
+    }
+    html:not(.dark) .mesh-gradient {
+      background-image:
+        radial-gradient(at 27% 37%, rgba(167, 139, 250, 0.06) 0px, transparent 50%),
+        radial-gradient(at 97% 21%, rgba(34, 211, 238, 0.04) 0px, transparent 50%),
+        radial-gradient(at 52% 99%, rgba(52, 211, 153, 0.03) 0px, transparent 50%);
+    }
+
+    /* --- Pulse glow for live dot --- */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+      50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+    }
+    .pulse-dot { animation: pulse-glow 2s ease-in-out infinite; }
+
+    /* --- Icon containers with colored glow --- */
+    .icon-glow-violet { background: rgba(167, 139, 250, 0.1); }
+    .icon-glow-emerald { background: rgba(52, 211, 153, 0.1); }
+    .icon-glow-amber { background: rgba(251, 191, 36, 0.1); }
+    .icon-glow-rose { background: rgba(251, 113, 133, 0.1); }
+    .icon-glow-cyan { background: rgba(34, 211, 238, 0.1); }
+
+    html:not(.dark) .icon-glow-violet { background: rgba(167, 139, 250, 0.12); }
+    html:not(.dark) .icon-glow-emerald { background: rgba(52, 211, 153, 0.12); }
+    html:not(.dark) .icon-glow-amber { background: rgba(251, 191, 36, 0.12); }
+    html:not(.dark) .icon-glow-rose { background: rgba(251, 113, 133, 0.12); }
+    html:not(.dark) .icon-glow-cyan { background: rgba(34, 211, 238, 0.12); }
+
+    /* --- Language Toggle --- */
+    .lang-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .lang-toggle:hover { background: rgba(0,0,0,0.05); }
+    html.dark .lang-toggle:hover { background: rgba(255,255,255,0.1); }
+
+    .lang-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      min-width: 120px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(0,0,0,0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 0.75rem;
+      padding: 0.35rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+    }
+    html.dark .lang-dropdown {
+      background: rgba(17,24,39,0.95);
+      border-color: rgba(255,255,255,0.1);
+    }
+    .lang-dropdown.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .lang-dropdown button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.45rem 0.65rem;
+      border: none;
+      background: transparent;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: inherit;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    .lang-dropdown button:hover { background: rgba(0,0,0,0.05); }
+    html.dark .lang-dropdown button:hover { background: rgba(255,255,255,0.08); }
+    .lang-dropdown button.active { font-weight: 700; color: #a78bfa; }
+  </style>
+</head>
+
+<body class="bg-white dark:bg-[#0a0e1a] text-gray-900 dark:text-gray-100 antialiased overflow-x-hidden">
+
+  
+  <!-- NAVIGATION                                   -->
+  
+  <nav id="main-nav"
+    class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl bg-white/70 dark:bg-[#0a0e1a]/70 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-white/10 px-6 py-3 transition-all duration-300"
+    role="navigation" aria-label="Main navigation"
+    style="box-shadow: 0 4px 30px rgba(0,0,0,0.05);">
+    <div class="flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="#hero" class="flex items-center gap-2.5 group" aria-label="BridgeCast AI Home">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+          <iconify-icon icon="solar:hand-shake-bold" width="18" height="18" style="color:#fff" aria-hidden="true"></iconify-icon>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+          BridgeCast <span class="gradient-text text-xs font-semibold ml-0.5">AI</span>
+        </span>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="hidden md:flex items-center gap-6" role="menubar">
+        <a href="#about" class="nav-link text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors font-medium" role="menuitem" data-i18n="nav_problem">Problem</a>
+        <a href="#understanding" class="nav-link text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors font-medium" role="menuitem" data-i18n="nav_philosophy">Philosophy</a>
+        <a href="#how-it-works" class="nav-link text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors font-medium" role="menuitem" data-i18n="nav_how">How It Works</a>
+        <a href="#features" class="nav-link text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors font-medium" role="menuitem" data-i18n="nav_features">Features</a>
+        <a href="#azure" class="nav-link text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors font-medium" role="menuitem" data-i18n="nav_azure">Azure</a>
+        <a href="#team" class="nav-link text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors font-medium" role="menuitem" data-i18n="nav_team">Team</a>
+
+        <!-- Dark/Light Mode Toggle -->
+        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" aria-label="Toggle dark mode">
+          <iconify-icon id="theme-icon-moon" icon="solar:moon-bold-duotone" width="20" height="20" class="hidden dark:block" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          <iconify-icon id="theme-icon-sun" icon="solar:sun-bold-duotone" width="20" height="20" class="block dark:hidden" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+        </button>
+
+        <!-- Language Toggle (click to cycle) -->
+        <button class="lang-toggle lang-cycle-btn" aria-label="Change language">
+          <span class="lang-label">🇺🇸 EN</span>
+        </button>
+
+        <a href="meeting-room.html"
+          class="ml-2 px-5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/20"
+          role="menuitem">
+          <span data-i18n="nav_join">Join Meeting</span>
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="flex items-center gap-2 md:hidden">
+        <button id="theme-toggle-mobile" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" aria-label="Toggle dark mode">
+          <iconify-icon icon="solar:moon-bold-duotone" width="20" height="20" class="hidden dark:block" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          <iconify-icon icon="solar:sun-bold-duotone" width="20" height="20" class="block dark:hidden" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+        </button>
+        <!-- Mobile Language Toggle (click to cycle) -->
+        <button class="lang-toggle lang-cycle-btn" aria-label="Change language">
+          <span class="lang-label">🇺🇸 EN</span>
+        </button>
+        <button id="mobile-menu-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" aria-label="Toggle menu" aria-expanded="false">
+          <iconify-icon icon="solar:hamburger-menu-linear" width="24" height="24" class="text-gray-900 dark:text-white" style="color: inherit" aria-hidden="true"></iconify-icon>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 hidden" role="dialog" aria-label="Mobile navigation menu">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" id="mobile-menu-backdrop"></div>
+    <div class="absolute top-24 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-white/90 dark:bg-[#111827]/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-white/10 p-6 flex flex-col gap-4">
+      <a href="#about" class="mobile-nav-link text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 text-center font-medium transition-colors" data-i18n="nav_problem">Problem</a>
+      <a href="#understanding" class="mobile-nav-link text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 text-center font-medium transition-colors" data-i18n="nav_philosophy">Philosophy</a>
+      <a href="#how-it-works" class="mobile-nav-link text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 text-center font-medium transition-colors" data-i18n="nav_how">How It Works</a>
+      <a href="#features" class="mobile-nav-link text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 text-center font-medium transition-colors" data-i18n="nav_features">Features</a>
+      <a href="#azure" class="mobile-nav-link text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 text-center font-medium transition-colors" data-i18n="nav_azure">Azure</a>
+      <a href="#team" class="mobile-nav-link text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 text-center font-medium transition-colors" data-i18n="nav_team">Team</a>
+      <a href="meeting-room.html" class="mt-2 px-5 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold text-center hover:opacity-90 transition-opacity">
+        <span data-i18n="nav_join">Join Meeting</span>
+      </a>
+    </div>
+  </div>
+
+
+  
+  <!-- HERO SECTION                                 -->
+  
+  <section id="hero" class="relative min-h-screen flex items-center justify-center bg-white dark:bg-[#0a0e1a] overflow-hidden mesh-gradient" aria-label="Hero">
+
+    <!-- Floating blobs -->
+    <div class="blob blob-purple" style="width: 600px; height: 600px; top: -150px; left: -200px;"></div>
+    <div class="blob blob-cyan" style="width: 500px; height: 500px; bottom: -100px; right: -150px;"></div>
+    <div class="blob blob-emerald" style="width: 400px; height: 400px; bottom: 10%; left: 40%;"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-6 text-center pt-28 pb-20">
+
+      <!-- Badge -->
+      <div class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md mb-8">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+        <span class="text-xs font-medium text-gray-500 dark:text-gray-400 tracking-wide uppercase" data-i18n="hero_badge">Microsoft Innovation Challenge &middot; March 2026</span>
+      </div>
+
+      <!-- Main heading -->
+      <h1 class="reveal text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="hero_headline">
+        Breaking the<br>
+        <span class="gradient-text">Communication</span><br>
+        Barrier
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="reveal text-lg sm:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed font-light" data-i18n-html="hero_subtitle">
+        Bridging <strong class="text-gray-900 dark:text-white font-semibold">sign language</strong> and <strong class="text-gray-900 dark:text-white font-semibold">speech</strong> in real time &mdash;
+        so every voice is heard, and every sign is understood.
+      </p>
+
+      <!-- Quote -->
+      <div class="reveal max-w-2xl mx-auto mb-10">
+        <div class="glass-card px-8 py-5">
+          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 italic leading-relaxed" data-i18n="hero_quote">
+            &ldquo;Sign language is not an incomplete substitute &mdash; it is a complete language in its own right.
+            We build an equal bridge between sign and speech.&rdquo;
+          </p>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="meeting-room.html"
+          class="group px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold text-lg hover:opacity-90 transition-all shadow-lg shadow-violet-500/25 flex items-center gap-3">
+          <iconify-icon icon="solar:videocamera-record-bold" width="22" height="22" aria-hidden="true"></iconify-icon>
+          <span data-i18n="hero_cta_join">Join a Meeting</span>
+          <iconify-icon icon="solar:arrow-right-linear" width="18" height="18" class="transition-transform group-hover:translate-x-1" aria-hidden="true"></iconify-icon>
+        </a>
+        <a href="#about"
+          class="group px-8 py-4 rounded-xl border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold text-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center gap-3 backdrop-blur-md">
+          <span data-i18n="hero_cta_learn">Learn More</span>
+          <iconify-icon icon="solar:arrow-down-linear" width="18" height="18" class="transition-transform group-hover:translate-y-1" aria-hidden="true"></iconify-icon>
+        </a>
+      </div>
+
+      <!-- Visual indicator: bridging icons -->
+      <div class="reveal mt-16 flex items-center justify-center gap-6 text-gray-400">
+        <div class="flex flex-col items-center gap-2">
+          <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center icon-float-violet">
+            <iconify-icon icon="solar:hand-stars-bold-duotone" width="28" height="28" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <span class="text-xs text-gray-400 font-medium" data-i18n="hero_sign_language">Sign Language</span>
+        </div>
+        <div class="flex items-center gap-2" aria-hidden="true">
+          <div class="w-8 h-[1px] bg-gradient-to-r from-violet-400 to-transparent bridge-line"></div>
+          <iconify-icon icon="solar:transfer-horizontal-bold-duotone" width="24" height="24" style="color: #22d3ee" class="transfer-icon"></iconify-icon>
+          <div class="w-8 h-[1px] bg-gradient-to-l from-cyan-400 to-transparent bridge-line"></div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center icon-float-cyan">
+            <iconify-icon icon="solar:microphone-3-bold-duotone" width="28" height="28" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <span class="text-xs text-gray-400 font-medium" data-i18n="hero_speech">Speech</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400" aria-hidden="true">
+      <span class="text-xs tracking-widest uppercase" data-i18n="hero_scroll">Scroll</span>
+      <iconify-icon icon="solar:alt-arrow-down-linear" width="18" height="18"></iconify-icon>
+    </div>
+  </section>
+
+
+  
+  <!-- PROBLEM STATEMENT                            -->
+  
+  <section id="about" class="relative py-28 lg:py-40 bg-gray-50 dark:bg-[#0d1225] overflow-hidden" aria-label="Problem Statement">
+    <!-- Blobs -->
+    <div class="blob blob-rose" style="width: 500px; height: 500px; top: -100px; right: -200px;"></div>
+    <div class="blob blob-purple" style="width: 400px; height: 400px; bottom: -50px; left: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fb7185" fill-rule="evenodd" d="M2.028 11.25A10 10 0 0 1 12 2c-.83 0-1.57.364-2.18.921c-.605.554-1.116 1.328-1.53 2.242c-.416.92-.74 1.996-.959 3.163a20 20 0 0 0-.318 2.924zm0 1.5h4.985c.036 1.002.143 1.988.318 2.924c.22 1.167.543 2.243.959 3.163c.414.914.925 1.688 1.53 2.242c.61.557 1.35.921 2.18.921c-5.27 0-9.589-4.077-9.972-9.25" clip-rule="evenodd"/><path fill="#fb7185" d="M12 2c.831 0 1.57.364 2.18.921c.605.554 1.117 1.328 1.53 2.242c.417.92.74 1.996.959 3.163c.175.936.282 1.922.318 2.924h4.985A10 10 0 0 0 12 2m4.669 13.674c-.219 1.167-.542 2.243-.959 3.163c-.413.914-.925 1.688-1.53 2.242c-.61.557-1.349.921-2.18.921c5.27 0 9.589-4.077 9.972-9.25h-4.985a20 20 0 0 1-.318 2.924"/><path fill="#fb7185" d="M12 3.396c-.275 0-.63.117-1.043.495c-.416.38-.833.977-1.201 1.79c-.366.808-.663 1.784-.867 2.873c-.16.859-.26 1.768-.296 2.696h6.814a18.5 18.5 0 0 0-.296-2.696c-.204-1.09-.5-2.065-.867-2.872c-.368-.814-.784-1.41-1.2-1.791c-.414-.378-.769-.495-1.044-.495m-3.111 12.05c.204 1.09.501 2.065.867 2.873c.368.813.785 1.41 1.2 1.79c.414.379.77.496 1.044.496c.275 0 .63-.117 1.044-.495c.416-.381.832-.978 1.2-1.791c.366-.808.663-1.783.867-2.873c.161-.858.261-1.768.296-2.696H8.593c.035.928.135 1.838.296 2.696" opacity=".5"/></svg>
+          <span data-i18n="about_badge">The Challenge</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="about_title">
+          A World Still <span class="gradient-text">Divided</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed" data-i18n-html="about_desc">
+          Current solutions are fragmented: speech-to-text tools only support one direction, professional sign language interpreters are expensive and scarce, and no existing platform delivers true bidirectional, real-time communication.
+        </p>
+      </div>
+
+      <!-- Big stats row -->
+      <div class="grid sm:grid-cols-3 gap-6 mb-16 stagger-children">
+        <div class="reveal glass-card glow-rose rounded-2xl p-8 text-center">
+          <div class="stat-number text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3" data-count="430" data-suffix="M+">0</div>
+          <p class="text-gray-700 dark:text-gray-300 font-medium mb-1" data-i18n="stat1_label">People Worldwide</p>
+          <p class="text-gray-400 text-sm" data-i18n="stat1_sub">experience disabling hearing loss</p>
+        </div>
+        <div class="reveal glass-card glow-amber rounded-2xl p-8 text-center">
+          <div class="stat-number text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3" data-count="300" data-suffix="+">0</div>
+          <p class="text-gray-700 dark:text-gray-300 font-medium mb-1" data-i18n="stat2_label">Distinct Sign Languages</p>
+          <p class="text-gray-400 text-sm" data-i18n="stat2_sub">each a fully independent natural language</p>
+        </div>
+        <div class="reveal glass-card glow-violet rounded-2xl p-8 text-center">
+          <div class="stat-number text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3" data-count="1" data-suffix="-Way">0</div>
+          <p class="text-gray-700 dark:text-gray-300 font-medium mb-1" data-i18n="stat3_label">Current Solutions</p>
+          <p class="text-gray-400 text-sm" data-i18n="stat3_sub">only speech-to-text, never sign-to-speech</p>
+        </div>
+      </div>
+
+      <!-- Before / After scenario -->
+      <div class="reveal mb-8">
+        <div class="text-center mb-10">
+          <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="scenario_title">A Deaf Colleague's First Team Meeting</h3>
+          <p class="text-gray-500 dark:text-gray-400" data-i18n="scenario_sub">The same scenario, two entirely different experiences.</p>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- BEFORE -->
+        <div class="reveal glass-card glow-rose rounded-2xl p-8 relative overflow-hidden">
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20">
+            <span class="text-xs font-bold text-rose-400 uppercase tracking-wider" data-i18n="before_label">Before</span>
+          </div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg icon-glow-rose flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:sad-circle-bold-duotone" width="24" height="24" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white" data-i18n="before_title">Without BridgeCast AI</h4>
+          </div>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:close-circle-bold" width="20" height="20" style="color: #fb7185; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="before_item1">Sits silently, reading delayed and often <strong class="text-gray-900 dark:text-white">inaccurate auto-captions</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:close-circle-bold" width="20" height="20" style="color: #fb7185; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="before_item2"><strong class="text-gray-900 dark:text-white">Cannot respond naturally</strong> &mdash; typing is slow and breaks the flow</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:close-circle-bold" width="20" height="20" style="color: #fb7185; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="before_item3">Misses <strong class="text-gray-900 dark:text-white">humor, urgency, and emotional nuances</strong> of the conversation</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:close-circle-bold" width="20" height="20" style="color: #fb7185; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="before_item4">Receives <strong class="text-gray-900 dark:text-white">no meeting notes</strong> attributed to them &mdash; because they never &ldquo;spoke&rdquo;</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:close-circle-bold" width="20" height="20" style="color: #fb7185; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="before_item5">Remains an <strong class="text-gray-900 dark:text-white">observer</strong>, not a participant</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- AFTER -->
+        <div class="reveal glass-card glow-emerald rounded-2xl p-8 relative overflow-hidden">
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider" data-i18n="after_label">After</span>
+          </div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg icon-glow-emerald flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:emoji-funny-circle-bold-duotone" width="24" height="24" style="color: #34d399" aria-hidden="true"></iconify-icon>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white" data-i18n="after_title">With BridgeCast AI</h4>
+          </div>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:check-circle-bold" width="20" height="20" style="color: #34d399; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="after_item1"><strong class="text-gray-900 dark:text-white">Manager speaks</strong> &rarr; real-time captions + signing avatar shows message in ASL</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:check-circle-bold" width="20" height="20" style="color: #34d399; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="after_item2"><strong class="text-gray-900 dark:text-white">Deaf colleague responds in sign</strong> &rarr; AI recognizes &rarr; TTS plays their voice naturally</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:check-circle-bold" width="20" height="20" style="color: #34d399; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="after_item3"><strong class="text-gray-900 dark:text-white">Bidirectional flow</strong> continues seamlessly for the entire meeting</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:check-circle-bold" width="20" height="20" style="color: #34d399; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="after_item4"><strong class="text-gray-900 dark:text-white">Emotion preserved</strong> in both directions &mdash; tone in speech, facial expressions in sign</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <iconify-icon icon="solar:check-circle-bold" width="20" height="20" style="color: #34d399; flex-shrink: 0; margin-top: 2px" aria-hidden="true"></iconify-icon>
+              <span class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed" data-i18n-html="after_item5"><strong class="text-gray-900 dark:text-white">Meeting ends</strong> &rarr; speaker-attributed transcript including &ldquo;Somi (sign): ...&rdquo;, emotion tags, action items, and Accessibility Report</span>
+            </li>
+          </ul>
+          <div class="mt-6 pt-5 border-t border-gray-100/50 dark:border-white/10">
+            <p class="text-emerald-500 dark:text-emerald-400 text-sm italic" data-i18n="after_quote">&ldquo;The Deaf colleague is no longer an observer &mdash; they are an equal participant with a voice that everyone can hear.&rdquo;</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- SIGN LANGUAGE UNDERSTANDING (Philosophy)     -->
+  
+  <section id="understanding" class="relative py-28 lg:py-40 bg-white dark:bg-[#0a0e1a] overflow-hidden mesh-gradient" aria-label="Sign Language Understanding">
+    <div class="blob blob-cyan" style="width: 500px; height: 500px; top: 10%; left: -150px;"></div>
+    <div class="blob blob-emerald" style="width: 400px; height: 400px; bottom: -100px; right: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-6">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:book-2-bold-duotone" width="16" height="16" style="color:#22d3ee" aria-hidden="true"></iconify-icon>
+          <span data-i18n="philosophy_badge">Our Philosophy</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="philosophy_title">
+          Understanding <span class="gradient-text">Sign Language</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mb-4" data-i18n-html="philosophy_desc">
+          This is not a technical spec &mdash; it is the <strong class="text-gray-900 dark:text-white font-semibold">philosophical foundation</strong> of our entire project.
+          Before writing a single line of code, our team studied the linguistics of sign language. What we learned fundamentally shaped our architecture.
+        </p>
+      </div>
+
+      <!-- Three myths intro -->
+      <div class="reveal text-center mb-12">
+        <p class="text-sm text-gray-400 uppercase tracking-wider font-semibold" data-i18n="philosophy_myths_intro">Most people assume sign language is universal, artificial, and incomplete.</p>
+        <p class="text-xl text-gray-900 dark:text-white font-bold mt-2" data-i18n="philosophy_myths_conclusion">All three assumptions are wrong.</p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6 mb-16 stagger-children">
+        <!-- Not Artificial -->
+        <div class="reveal glass-card glow-emerald rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg icon-glow-emerald flex items-center justify-center">
+              <iconify-icon icon="solar:leaf-bold-duotone" width="22" height="22" style="color: #34d399" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider" data-i18n="myth_busted">Myth Busted</span>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white" data-i18n="myth1_title">Not Artificial</h3>
+            </div>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4" data-i18n-html="myth1_desc">
+            Sign languages were not invented by anyone. They <strong class="text-gray-900 dark:text-white">emerged naturally</strong> within Deaf communities over centuries, just like spoken languages. They have their own grammar, syntax, and idiomatic expressions.
+          </p>
+          <div class="rounded-lg bg-emerald-500/5 border border-emerald-500/10 px-4 py-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              <iconify-icon icon="solar:lightbulb-bold-duotone" width="14" height="14" style="color: #34d399; vertical-align: -2px;" aria-hidden="true"></iconify-icon>
+              <span data-i18n="myth1_insight">The Korean Sign Language expression for &ldquo;catching a smell&rdquo; has a meaning no hearing Korean would intuit without learning KSL.</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Not Universal -->
+        <div class="reveal glass-card glow-amber rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg icon-glow-amber flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fbbf24" fill-rule="evenodd" d="M2.028 11.25A10 10 0 0 1 12 2c-.83 0-1.57.364-2.18.921c-.605.554-1.116 1.328-1.53 2.242c-.416.92-.74 1.996-.959 3.163a20 20 0 0 0-.318 2.924zm0 1.5h4.985c.036 1.002.143 1.988.318 2.924c.22 1.167.543 2.243.959 3.163c.414.914.925 1.688 1.53 2.242c.61.557 1.35.921 2.18.921c-5.27 0-9.589-4.077-9.972-9.25" clip-rule="evenodd"/><path fill="#fbbf24" d="M12 2c.831 0 1.57.364 2.18.921c.605.554 1.117 1.328 1.53 2.242c.417.92.74 1.996.959 3.163c.175.936.282 1.922.318 2.924h4.985A10 10 0 0 0 12 2m4.669 13.674c-.219 1.167-.542 2.243-.959 3.163c-.413.914-.925 1.688-1.53 2.242c-.61.557-1.349.921-2.18.921c5.27 0 9.589-4.077 9.972-9.25h-4.985a20 20 0 0 1-.318 2.924"/><path fill="#fbbf24" d="M12 3.396c-.275 0-.63.117-1.043.495c-.416.38-.833.977-1.201 1.79c-.366.808-.663 1.784-.867 2.873c-.16.859-.26 1.768-.296 2.696h6.814a18.5 18.5 0 0 0-.296-2.696c-.204-1.09-.5-2.065-.867-2.872c-.368-.814-.784-1.41-1.2-1.791c-.414-.378-.769-.495-1.044-.495m-3.111 12.05c.204 1.09.501 2.065.867 2.873c.368.813.785 1.41 1.2 1.79c.414.379.77.496 1.044.496c.275 0 .63-.117 1.044-.495c.416-.381.832-.978 1.2-1.791c.366-.808.663-1.783.867-2.873c.161-.858.261-1.768.296-2.696H8.593c.035.928.135 1.838.296 2.696" opacity=".5"/></svg>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-amber-400 uppercase tracking-wider" data-i18n="myth_busted">Myth Busted</span>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white" data-i18n="myth2_title">Not Universal</h3>
+            </div>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4" data-i18n-html="myth2_desc">
+            There are over <strong class="text-gray-900 dark:text-white">300+ distinct sign languages</strong> worldwide. ASL (American Sign Language) is completely different from BSL (British Sign Language), even though both countries speak English.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/10 text-xs font-semibold text-amber-500 dark:text-amber-400">ASL</span>
+            <span class="px-3 py-1.5 rounded-md bg-violet-500/10 border border-violet-500/10 text-xs font-semibold text-violet-500 dark:text-violet-400">BSL</span>
+            <span class="px-3 py-1.5 rounded-md bg-cyan-500/10 border border-cyan-500/10 text-xs font-semibold text-cyan-500 dark:text-cyan-400">KSL</span>
+            <span class="px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/10 text-xs font-semibold text-emerald-500 dark:text-emerald-400">TSL</span>
+            <span class="px-3 py-1.5 rounded-md bg-white/50 dark:bg-white/5 text-xs font-semibold text-gray-400">+ 296 more</span>
+          </div>
+        </div>
+
+        <!-- Not Incomplete -->
+        <div class="reveal glass-card glow-violet rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg icon-glow-violet flex items-center justify-center">
+              <iconify-icon icon="solar:verified-check-bold-duotone" width="22" height="22" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-violet-400 uppercase tracking-wider" data-i18n="myth_busted">Myth Busted</span>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white" data-i18n="myth3_title">Not Incomplete</h3>
+            </div>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4" data-i18n-html="myth3_desc">
+            Sign languages are <strong class="text-gray-900 dark:text-white">equal to spoken languages</strong> in structural complexity and expressive power. In some domains &mdash; spatial relationships, simultaneous information &mdash; they are actually <em>more</em> expressive.
+          </p>
+          <div class="rounded-lg bg-violet-500/5 border border-violet-500/10 px-4 py-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              <iconify-icon icon="solar:lightbulb-bold-duotone" width="14" height="14" style="color: #a78bfa; vertical-align: -2px;" aria-hidden="true"></iconify-icon>
+              <span data-i18n-html="myth3_insight">A raised eyebrow in ASL can change a statement into a question &mdash; facial expressions carry <strong class="text-gray-900 dark:text-white">grammatical meaning</strong>.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design Response Table -->
+      <div class="reveal glass-card glow-cyan rounded-2xl p-8 lg:p-10">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+          <iconify-icon icon="solar:settings-bold-duotone" width="22" height="22" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          <span data-i18n="design_title">How This Shapes Our Design</span>
+        </h3>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider" data-i18n="design_misconception">Misconception</div>
+            <p class="text-sm text-gray-400" data-i18n="design_misc1">&ldquo;Sign language is universal&rdquo;</p>
+            <div class="h-[1px] bg-gradient-to-r from-violet-500/30 to-transparent"></div>
+            <div class="text-xs font-bold text-violet-400 uppercase tracking-wider" data-i18n="design_response">Our Response</div>
+            <p class="text-sm text-gray-600 dark:text-gray-300" data-i18n-html="design_resp1"><strong class="text-gray-900 dark:text-white">Modular architecture</strong> &mdash; each sign language (ASL, KSL, TSL, BSL...) gets its own recognition model, swappable without rebuilding the system.</p>
+          </div>
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider" data-i18n="design_misconception">Misconception</div>
+            <p class="text-sm text-gray-400" data-i18n="design_misc2">&ldquo;Sign language is a helper tool&rdquo;</p>
+            <div class="h-[1px] bg-gradient-to-r from-emerald-500/30 to-transparent"></div>
+            <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider" data-i18n="design_response">Our Response</div>
+            <p class="text-sm text-gray-600 dark:text-gray-300" data-i18n-html="design_resp2"><strong class="text-gray-900 dark:text-white">Equal bridge, not assistive tool</strong> &mdash; sign and speech are two equally valid input/output modalities. Neither is primary.</p>
+          </div>
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider" data-i18n="design_misconception">Misconception</div>
+            <p class="text-sm text-gray-400" data-i18n="design_misc3">&ldquo;Sign language is less expressive&rdquo;</p>
+            <div class="h-[1px] bg-gradient-to-r from-cyan-500/30 to-transparent"></div>
+            <div class="text-xs font-bold text-cyan-400 uppercase tracking-wider" data-i18n="design_response">Our Response</div>
+            <p class="text-sm text-gray-600 dark:text-gray-300" data-i18n-html="design_resp3"><strong class="text-gray-900 dark:text-white">Bidirectional emotion preservation</strong> &mdash; we preserve emotional information in both directions (tone/pitch in speech; facial expressions in sign).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- HOW IT WORKS - 3 Directions                  -->
+  
+  <section id="how-it-works" class="relative py-28 lg:py-40 bg-gray-50 dark:bg-[#0d1225] overflow-hidden" aria-label="How It Works">
+    <div class="blob blob-violet" style="width: 500px; height: 500px; top: -100px; right: -200px; background: radial-gradient(circle, #a78bfa 0%, transparent 70%); animation: floatBlob1 18s ease-in-out infinite;"></div>
+    <div class="blob blob-emerald" style="width: 400px; height: 400px; bottom: 0; left: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-20">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:routing-2-bold-duotone" width="16" height="16" style="color:#a78bfa" aria-hidden="true"></iconify-icon>
+          <span data-i18n="how_badge">How It Works</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="how_title">
+          Three Directions of <span class="gradient-text">Equal Access</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="how_desc">Real-time AI bridges both directions of communication seamlessly, plus avatar visualization.</p>
+      </div>
+
+      <!-- 3 Directions -->
+      <div class="grid lg:grid-cols-3 gap-6 mb-20 stagger-children">
+
+        <!-- Direction 1: Sign -> Speech -->
+        <div class="reveal glass-card glow-violet rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white font-black text-sm">01</div>
+            <div class="h-[1px] flex-1 bg-gradient-to-r from-violet-500/30 to-transparent"></div>
+          </div>
+          <div class="w-12 h-12 rounded-xl icon-glow-violet flex items-center justify-center mb-5 icon-float-violet">
+            <iconify-icon icon="solar:hand-stars-bold-duotone" width="28" height="28" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="dir1_title">Sign &rarr; Speech</h3>
+          <p class="text-sm text-violet-400 font-medium mb-4" data-i18n="dir1_sub">Core differentiator</p>
+          <p class="text-gray-500 dark:text-gray-400 leading-relaxed mb-5 text-sm" data-i18n="dir1_desc">Camera captures sign language &rarr; Uni-Sign AI recognizes gestures &rarr; converts to text &rarr; Azure TTS plays audio so the whole team hears their response naturally.</p>
+          <div class="flex items-center gap-2 text-xs flex-wrap">
+            <span class="px-2.5 py-1 rounded-md bg-violet-500/10 text-violet-400 font-semibold">Camera</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-violet-500/10 text-violet-400 font-semibold">Uni-Sign</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-violet-500/10 text-violet-400 font-semibold">Text</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-violet-500/10 text-violet-400 font-semibold">TTS</span>
+          </div>
+        </div>
+
+        <!-- Direction 2: Speech -> Text -->
+        <div class="reveal glass-card glow-cyan rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm">02</div>
+            <div class="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 to-transparent"></div>
+          </div>
+          <div class="w-12 h-12 rounded-xl icon-glow-cyan flex items-center justify-center mb-5 icon-float-cyan">
+            <iconify-icon icon="solar:microphone-3-bold-duotone" width="28" height="28" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="dir2_title">Speech &rarr; Text</h3>
+          <p class="text-sm text-cyan-400 font-medium mb-4" data-i18n="dir2_sub">Real-time captions</p>
+          <p class="text-gray-500 dark:text-gray-400 leading-relaxed mb-5 text-sm" data-i18n="dir2_desc">Microphone captures speech &rarr; Azure Speech-to-Text provides real-time transcription &rarr; on-screen subtitles appear instantly for Deaf participants.</p>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="px-2.5 py-1 rounded-md bg-cyan-500/10 text-cyan-400 font-semibold">Mic</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-cyan-500/10 text-cyan-400 font-semibold">Azure STT</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-cyan-500/10 text-cyan-400 font-semibold">Captions</span>
+          </div>
+        </div>
+
+        <!-- Direction 3: Speech -> Sign Avatar -->
+        <div class="reveal glass-card glow-emerald rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-black text-sm">03</div>
+            <div class="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 to-transparent"></div>
+          </div>
+          <div class="w-12 h-12 rounded-xl icon-glow-emerald flex items-center justify-center mb-5" style="animation: iconFloat 3s ease-in-out infinite 1s;">
+            <iconify-icon icon="solar:ghost-bold-duotone" width="28" height="28" style="color: #34d399" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="dir3_title">Speech &rarr; Sign Avatar</h3>
+          <p class="text-sm text-emerald-400 font-medium mb-4" data-i18n="dir3_sub">True bidirectional</p>
+          <p class="text-gray-500 dark:text-gray-400 leading-relaxed mb-5 text-sm" data-i18n="dir3_desc">Azure STT transcribes &rarr; text converted to ASL gloss via Azure OpenAI &rarr; pre-mapped sign animation clips play on avatar &mdash; Deaf users receive info in their native modality.</p>
+          <div class="flex items-center gap-2 text-xs flex-wrap">
+            <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold">STT</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #34d399" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold">ASL Gloss</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" style="color: #34d399" aria-hidden="true"></iconify-icon>
+            <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold">Avatar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Pipeline -->
+      <div class="reveal">
+        <div class="text-center mb-10">
+          <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="pipeline_title">Sign Language Recognition Pipeline</h3>
+          <p class="text-gray-400 text-sm" data-i18n="pipeline_sub">Uni-Sign (ICLR 2025) &mdash; end-to-end video-to-text inference</p>
+        </div>
+        <div class="glass-card glow-violet rounded-2xl p-8 lg:p-10">
+          <div class="flex flex-col lg:flex-row items-center gap-4 lg:gap-0">
+            <!-- Step 1 -->
+            <div class="flex-1 text-center">
+              <div class="w-12 h-12 rounded-xl icon-glow-violet flex items-center justify-center mx-auto mb-3">
+                <iconify-icon icon="solar:videocamera-bold-duotone" width="24" height="24" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold text-sm mb-1" data-i18n="pipe1_title">Webcam Input</p>
+              <p class="text-gray-400 text-xs" data-i18n="pipe1_sub">Video frames</p>
+            </div>
+            <iconify-icon icon="solar:arrow-right-bold" width="20" height="20" style="color: #a78bfa" class="hidden lg:block flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <iconify-icon icon="solar:arrow-down-bold" width="20" height="20" style="color: #a78bfa" class="lg:hidden flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <!-- Step 2 -->
+            <div class="flex-1 text-center">
+              <div class="w-12 h-12 rounded-xl icon-glow-cyan flex items-center justify-center mx-auto mb-3">
+                <iconify-icon icon="solar:body-bold-duotone" width="24" height="24" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold text-sm mb-1" data-i18n="pipe2_title">RTMPose</p>
+              <p class="text-gray-400 text-xs" data-i18n="pipe2_sub">133 keypoints per frame</p>
+              <div class="flex flex-wrap gap-1 justify-center mt-2">
+                <span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-400 font-semibold">Body 9</span>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-400 font-semibold">Hands 42</span>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-400 font-semibold">Face 18</span>
+              </div>
+            </div>
+            <iconify-icon icon="solar:arrow-right-bold" width="20" height="20" style="color: #22d3ee" class="hidden lg:block flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <iconify-icon icon="solar:arrow-down-bold" width="20" height="20" style="color: #22d3ee" class="lg:hidden flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <!-- Step 3 -->
+            <div class="flex-1 text-center">
+              <div class="w-12 h-12 rounded-xl icon-glow-emerald flex items-center justify-center mx-auto mb-3">
+                <iconify-icon icon="solar:graph-new-bold-duotone" width="24" height="24" style="color: #34d399" aria-hidden="true"></iconify-icon>
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold text-sm mb-1" data-i18n="pipe3_title">ST-GCN Encoders</p>
+              <p class="text-gray-400 text-xs" data-i18n="pipe3_sub">Body, hands, face</p>
+            </div>
+            <iconify-icon icon="solar:arrow-right-bold" width="20" height="20" style="color: #34d399" class="hidden lg:block flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <iconify-icon icon="solar:arrow-down-bold" width="20" height="20" style="color: #34d399" class="lg:hidden flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <!-- Step 4 -->
+            <div class="flex-1 text-center">
+              <div class="w-12 h-12 rounded-xl icon-glow-amber flex items-center justify-center mx-auto mb-3">
+                <iconify-icon icon="solar:layers-bold-duotone" width="24" height="24" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold text-sm mb-1" data-i18n="pipe4_title">Feature Fusion</p>
+              <p class="text-gray-400 text-xs" data-i18n="pipe4_sub">Multi-stream merge</p>
+            </div>
+            <iconify-icon icon="solar:arrow-right-bold" width="20" height="20" style="color: #fbbf24" class="hidden lg:block flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <iconify-icon icon="solar:arrow-down-bold" width="20" height="20" style="color: #fbbf24" class="lg:hidden flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <!-- Step 5 -->
+            <div class="flex-1 text-center">
+              <div class="w-12 h-12 rounded-xl icon-glow-rose flex items-center justify-center mx-auto mb-3">
+                <iconify-icon icon="solar:text-bold-duotone" width="24" height="24" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold text-sm mb-1" data-i18n="pipe5_title">mT5 Decoder</p>
+              <p class="text-gray-400 text-xs" data-i18n="pipe5_sub">Beam search &rarr; Text</p>
+            </div>
+            <iconify-icon icon="solar:arrow-right-bold" width="20" height="20" style="color: #fb7185" class="hidden lg:block flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <iconify-icon icon="solar:arrow-down-bold" width="20" height="20" style="color: #fb7185" class="lg:hidden flex-shrink-0 opacity-50" aria-hidden="true"></iconify-icon>
+            <!-- Step 6 -->
+            <div class="flex-1 text-center">
+              <div class="w-12 h-12 rounded-xl icon-glow-violet flex items-center justify-center mx-auto mb-3">
+                <iconify-icon icon="solar:soundwave-bold-duotone" width="24" height="24" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold text-sm mb-1" data-i18n="pipe6_title">Azure TTS</p>
+              <p class="text-gray-400 text-xs" data-i18n="pipe6_sub">Audio output</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- DIFFERENTIATION FEATURES                     -->
+  
+  <section id="features" class="relative py-28 lg:py-40 bg-white dark:bg-[#0a0e1a] overflow-hidden mesh-gradient" aria-label="Differentiation Features">
+    <div class="blob blob-rose" style="width: 500px; height: 500px; top: -100px; left: -100px;"></div>
+    <div class="blob blob-cyan" style="width: 400px; height: 400px; bottom: -100px; right: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:widget-5-bold-duotone" width="16" height="16" style="color:#fbbf24" aria-hidden="true"></iconify-icon>
+          <span data-i18n="feat_badge">What Sets Us Apart</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="feat_title">
+          Differentiation <span class="gradient-text">Features</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="feat_desc">Beyond basic accessibility &mdash; features that create truly equal, measurable participation.</p>
+      </div>
+
+      <!-- Features Bento Grid -->
+      <div class="bento-grid stagger-children">
+
+        <!-- Speaker Diarization (wide) -->
+        <div class="reveal bento-wide glass-card glow-violet rounded-2xl p-8">
+          <div class="flex items-start gap-5">
+            <div class="w-12 h-12 rounded-xl icon-glow-violet flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:users-group-rounded-bold-duotone" width="26" height="26" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="feat_diarization_title">Speaker Diarization</h3>
+              <p class="text-gray-500 dark:text-gray-400 leading-relaxed text-sm mb-4" data-i18n-html="feat_diarization_desc">Identifies <strong class="text-gray-900 dark:text-white">who said what</strong> &mdash; both voice and sign language. Meeting notes become actionable with clear attribution: &ldquo;Somi (sign): ...&rdquo; / &ldquo;Ollie (voice): ...&rdquo;</p>
+              <!-- Mock transcript -->
+              <div class="rounded-lg bg-violet-500/5 border border-violet-500/10 p-4 space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white">S</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400"><strong class="text-gray-700 dark:text-gray-200">Somi (sign):</strong> I think we should prioritize the user dashboard.</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-[10px] font-bold text-white">O</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400"><strong class="text-gray-700 dark:text-gray-200">Ollie (voice):</strong> Agreed. Let me assign the tickets.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bidirectional Emotion Tagging -->
+        <div class="reveal glass-card glow-rose rounded-2xl p-8">
+          <div class="w-12 h-12 rounded-xl icon-glow-rose flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:heart-pulse-bold-duotone" width="26" height="26" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="feat_emotion_title">Emotion Tagging</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-3" data-i18n-html="feat_emotion_desc">Tags each utterance with sentiment in <strong class="text-gray-900 dark:text-white">both directions</strong>.</p>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs text-gray-400">
+              <span>Speech &rarr; tone/pitch</span>
+              <iconify-icon icon="solar:transfer-horizontal-bold-duotone" width="14" height="14" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+              <span>Sign &rarr; facial expr.</span>
+            </div>
+            <div class="flex gap-2 mt-2">
+              <span class="px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-bold">Positive</span>
+              <span class="px-2 py-1 rounded-md bg-amber-500/10 text-amber-400 text-[10px] font-bold">Neutral</span>
+              <span class="px-2 py-1 rounded-md bg-rose-500/10 text-rose-400 text-[10px] font-bold">Concern</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Alert -->
+        <div class="reveal glass-card glow-amber rounded-2xl p-8">
+          <div class="w-12 h-12 rounded-xl icon-glow-amber flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:alarm-bold-duotone" width="26" height="26" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="feat_emergency_title">Emergency Alert</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-3" data-i18n-html="feat_emergency_desc">Detects <strong class="text-gray-900 dark:text-white">urgent language</strong> and triggers an immediate visual alert for Deaf participants.</p>
+          <div class="rounded-lg bg-amber-500/5 border border-amber-500/10 p-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2.5 h-2.5 rounded-full bg-amber-400 pulse-dot"></div>
+              <span class="text-xs text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider" data-i18n="feat_safety_badge">Safety Feature</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Participation Dashboard -->
+        <div class="reveal glass-card glow-cyan rounded-2xl p-8">
+          <div class="w-12 h-12 rounded-xl icon-glow-cyan flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:chart-2-bold-duotone" width="26" height="26" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="feat_dashboard_title">Participation Dashboard</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4" data-i18n-html="feat_dashboard_desc">Real-time speaking time visualization that <strong class="text-gray-900 dark:text-white">directly proves</strong> measurable accessibility impact.</p>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-gray-400 w-12 text-right">Somi</span>
+              <div class="flex-1 h-2.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+                <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-violet-500 to-violet-400" style="width: 35%"></div>
+              </div>
+              <span class="text-[10px] text-violet-400 font-semibold w-8">35%</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-gray-400 w-12 text-right">Ollie</span>
+              <div class="flex-1 h-2.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+                <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400" style="width: 40%"></div>
+              </div>
+              <span class="text-[10px] text-cyan-400 font-semibold w-8">40%</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-gray-400 w-12 text-right">Tsai</span>
+              <div class="flex-1 h-2.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+                <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width: 25%"></div>
+              </div>
+              <span class="text-[10px] text-emerald-400 font-semibold w-8">25%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signing Avatar (wide) -->
+        <div class="reveal bento-wide glass-card glow-emerald rounded-2xl p-8">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 rounded-xl icon-glow-emerald flex items-center justify-center">
+                <iconify-icon icon="solar:ghost-bold-duotone" width="26" height="26" style="color: #34d399" aria-hidden="true"></iconify-icon>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-i18n="feat_avatar_title">Signing Avatar</h3>
+              <p class="text-gray-500 dark:text-gray-400 leading-relaxed text-sm mb-3" data-i18n-html="feat_avatar_desc">Spoken language &rarr; sign language animation. True bidirectional completion &mdash; Deaf users receive information not only as text but in their <strong class="text-gray-900 dark:text-white">native modality</strong>.</p>
+              <p class="text-gray-400 dark:text-gray-500 text-xs leading-relaxed" data-i18n="feat_avatar_detail">Text &rarr; ASL gloss sequence (via Azure OpenAI) &rarr; pre-mapped sign animation clips played on a 2D/3D avatar. Future: real-time 3D rendering with smooth motion interpolation.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Meeting Notes -->
+        <div class="reveal glass-card glow-amber rounded-2xl p-8">
+          <div class="w-12 h-12 rounded-xl icon-glow-amber flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:document-text-bold-duotone" width="26" height="26" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="feat_notes_title">Smart Meeting Notes</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-3" data-i18n-html="feat_notes_desc">Auto-generates speaker-attributed transcript, emotion tags, key decisions, action items, and a quantitative <strong class="text-gray-900 dark:text-white">Accessibility Report</strong>.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="px-2 py-1 rounded-md bg-violet-500/10 text-violet-400 text-[10px] font-semibold">Transcript</span>
+            <span class="px-2 py-1 rounded-md bg-rose-500/10 text-rose-400 text-[10px] font-semibold">Emotions</span>
+            <span class="px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400 text-[10px] font-semibold">Actions</span>
+            <span class="px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold">Report</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- MEASURABLE IMPACT                            -->
+  
+  <section id="impact" class="relative py-28 lg:py-40 bg-gray-50 dark:bg-[#0d1225] overflow-hidden" aria-label="Measurable Impact">
+    <div class="blob blob-purple" style="width: 500px; height: 500px; top: -100px; left: -200px;"></div>
+    <div class="blob blob-cyan" style="width: 400px; height: 400px; bottom: -50px; right: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:chart-bold-duotone" width="16" height="16" style="color:#34d399" aria-hidden="true"></iconify-icon>
+          <span data-i18n="impact_badge">Measurable Impact</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="impact_title">
+          Numbers That <span class="gradient-text">Prove It</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="impact_desc">Our Accessibility Report provides quantified proof of measurable accessibility impact, auto-generated at the end of each meeting.</p>
+      </div>
+
+      <!-- Performance Metrics -->
+      <div class="reveal mb-10">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <iconify-icon icon="solar:speedometer-bold-duotone" width="20" height="20" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          <span data-i18n="impact_perf_title">Real-Time Performance Targets</span>
+        </h3>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16 stagger-children">
+        <div class="reveal glass-card glow-violet rounded-xl p-6 text-center">
+          <div class="text-4xl font-black text-gray-900 dark:text-white mb-2">&gt;90%</div>
+          <p class="text-gray-700 dark:text-gray-300 font-semibold text-sm mb-1" data-i18n="perf1_label">Sign Recognition</p>
+          <p class="text-gray-400 text-xs" data-i18n="perf1_sub">Accuracy per recognized sign</p>
+          <div class="mt-3 h-1.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+            <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-violet-500 to-violet-400" style="width: 90%"></div>
+          </div>
+        </div>
+        <div class="reveal glass-card glow-cyan rounded-xl p-6 text-center">
+          <div class="text-4xl font-black text-gray-900 dark:text-white mb-2">&lt;500ms</div>
+          <p class="text-gray-700 dark:text-gray-300 font-semibold text-sm mb-1" data-i18n="perf2_label">Caption Latency</p>
+          <p class="text-gray-400 text-xs" data-i18n="perf2_sub">Speech to on-screen text</p>
+          <div class="mt-3 h-1.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+            <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400" style="width: 85%"></div>
+          </div>
+        </div>
+        <div class="reveal glass-card glow-emerald rounded-xl p-6 text-center">
+          <div class="text-4xl font-black text-gray-900 dark:text-white mb-2">&lt;800ms</div>
+          <p class="text-gray-700 dark:text-gray-300 font-semibold text-sm mb-1" data-i18n="perf3_label">TTS Latency</p>
+          <p class="text-gray-400 text-xs" data-i18n="perf3_sub">Sign recognition to audio</p>
+          <div class="mt-3 h-1.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+            <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width: 80%"></div>
+          </div>
+        </div>
+        <div class="reveal glass-card glow-amber rounded-xl p-6 text-center">
+          <div class="text-4xl font-black text-gray-900 dark:text-white mb-2">100%</div>
+          <p class="text-gray-700 dark:text-gray-300 font-semibold text-sm mb-1" data-i18n="perf4_label">Caption Coverage</p>
+          <p class="text-gray-400 text-xs" data-i18n="perf4_sub">Meeting duration with captions</p>
+          <div class="mt-3 h-1.5 rounded-full bg-white/10 dark:bg-white/10 overflow-hidden">
+            <div class="progress-bar-fill h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-400" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessibility Impact Metrics -->
+      <div class="reveal">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <iconify-icon icon="solar:clipboard-check-bold-duotone" width="20" height="20" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          <span data-i18n="report_title">Auto-Generated Accessibility Report</span>
+        </h3>
+      </div>
+
+      <div class="reveal glass-card glow-cyan rounded-2xl p-8 lg:p-10">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="flex items-start gap-4">
+            <div class="w-9 h-9 rounded-lg icon-glow-violet flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:pie-chart-2-bold-duotone" width="18" height="18" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-semibold text-sm mb-1" data-i18n="report1_label">Participation Balance</p>
+              <p class="text-gray-400 text-xs" data-i18n="report1_sub">Speaking time distribution across all participants</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-9 h-9 rounded-lg icon-glow-rose flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:heart-pulse-bold-duotone" width="18" height="18" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-semibold text-sm mb-1" data-i18n="report2_label">Sentiment Distribution</p>
+              <p class="text-gray-400 text-xs" data-i18n="report2_sub">Emotion breakdown per participant &mdash; positive / neutral / concern</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-9 h-9 rounded-lg icon-glow-emerald flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:checklist-bold-duotone" width="18" height="18" style="color: #34d399" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-semibold text-sm mb-1" data-i18n="report3_label">Action Items</p>
+              <p class="text-gray-400 text-xs" data-i18n="report3_sub">Decisions and tasks auto-extracted with owners</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-9 h-9 rounded-lg icon-glow-cyan flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:transfer-horizontal-bold-duotone" width="18" height="18" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-semibold text-sm mb-1" data-i18n="report4_label">Bidirectional Rate</p>
+              <p class="text-gray-400 text-xs" data-i18n="report4_sub">% of Deaf participant utterances successfully converted to speech</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-9 h-9 rounded-lg icon-glow-amber flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:emoji-funny-circle-bold-duotone" width="18" height="18" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-semibold text-sm mb-1" data-i18n="report5_label">Emotion Preservation</p>
+              <p class="text-gray-400 text-xs" data-i18n="report5_sub">% of utterances with emotion tags in both directions</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-9 h-9 rounded-lg icon-glow-violet flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:document-text-bold-duotone" width="18" height="18" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-semibold text-sm mb-1" data-i18n="report6_label">Meeting Summary</p>
+              <p class="text-gray-400 text-xs" data-i18n="report6_sub">AI-extracted key decisions, owners, and deadlines</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- AZURE SERVICES SHOWCASE                      -->
+  
+  <section id="azure" class="relative py-28 lg:py-40 bg-white dark:bg-[#0a0e1a] overflow-hidden mesh-gradient" aria-label="Azure Services">
+    <div class="blob blob-purple" style="width: 600px; height: 600px; top: -200px; right: -200px;"></div>
+    <div class="blob blob-cyan" style="width: 400px; height: 400px; bottom: -100px; left: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:cloud-bold-duotone" width="16" height="16" style="color:#22d3ee" aria-hidden="true"></iconify-icon>
+          <span data-i18n="azure_badge">Built on Azure</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="azure_title">
+          Powered by <span class="gradient-text">15 Azure Services</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="azure_desc">Enterprise-grade cloud infrastructure purpose-built for reliability, scale, and responsible AI.</p>
+      </div>
+
+      <!-- Azure Services Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger-children">
+
+        <div class="reveal glass-card glow-violet rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-violet flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:microphone-3-bold-duotone" width="22" height="22" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az1_name">AI Speech (STT)</h4>
+          <p class="text-xs text-gray-400" data-i18n="az1_desc">Real-time STT + speaker diarization</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-violet-500/10 text-violet-400">Performance</span>
+        </div>
+
+        <div class="reveal glass-card glow-cyan rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-cyan flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:soundwave-bold-duotone" width="22" height="22" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az2_name">AI Speech (TTS)</h4>
+          <p class="text-xs text-gray-400" data-i18n="az2_desc">Sign-to-voice output</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-400">Performance</span>
+        </div>
+
+        <div class="reveal glass-card glow-emerald rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-emerald flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:eye-bold-duotone" width="22" height="22" style="color: #34d399" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az3_name">AI Vision</h4>
+          <p class="text-xs text-gray-400" data-i18n="az3_desc">Video frame processing for sign</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400">Performance</span>
+        </div>
+
+        <div class="reveal glass-card glow-amber rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-amber flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:magic-stick-3-bold-duotone" width="22" height="22" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az4_name">Azure OpenAI</h4>
+          <p class="text-xs text-gray-400" data-i18n="az4_desc">Summaries, emotion, ASL gloss</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400">Innovation</span>
+        </div>
+
+        <div class="reveal glass-card glow-rose rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-rose flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:videocamera-record-bold-duotone" width="22" height="22" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az5_name">Communication Svc</h4>
+          <p class="text-xs text-gray-400" data-i18n="az5_desc">Real-time video/audio meeting</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400">Performance</span>
+        </div>
+
+        <div class="reveal glass-card glow-violet rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-violet flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:translation-bold-duotone" width="22" height="22" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az6_name">AI Translator</h4>
+          <p class="text-xs text-gray-400" data-i18n="az6_desc">Multi-language support</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-violet-500/10 text-violet-400">Azure Breadth</span>
+        </div>
+
+        <div class="reveal glass-card glow-emerald rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-emerald flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:shield-check-bold-duotone" width="22" height="22" style="color: #34d399" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az7_name">Content Safety</h4>
+          <p class="text-xs text-gray-400" data-i18n="az7_desc">Harmful content filtering</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400">Responsible AI</span>
+        </div>
+
+        <div class="reveal glass-card glow-cyan rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-cyan flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:planet-3-bold-duotone" width="22" height="22" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az8_name">Cosmos DB</h4>
+          <p class="text-xs text-gray-400" data-i18n="az8_desc">Notes, prefs, sign dictionary</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-400">Performance</span>
+        </div>
+
+        <div class="reveal glass-card glow-amber rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-amber flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:bolt-circle-bold-duotone" width="22" height="22" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az9_name">Azure Functions</h4>
+          <p class="text-xs text-gray-400" data-i18n="az9_desc">Serverless orchestration</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400">Azure Breadth</span>
+        </div>
+
+        <div class="reveal glass-card glow-rose rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-rose flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:key-bold-duotone" width="22" height="22" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az10_name">Key Vault</h4>
+          <p class="text-xs text-gray-400" data-i18n="az10_desc">API keys &amp; secrets</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400">Responsible AI</span>
+        </div>
+
+        <div class="reveal glass-card glow-violet rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-violet flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:chart-2-bold-duotone" width="22" height="22" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az11_name">Monitor</h4>
+          <p class="text-xs text-gray-400" data-i18n="az11_desc">Health, latency dashboards</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-violet-500/10 text-violet-400">Performance</span>
+        </div>
+
+        <div class="reveal glass-card glow-cyan rounded-xl p-5 text-center">
+          <div class="w-10 h-10 rounded-lg icon-glow-cyan flex items-center justify-center mx-auto mb-3">
+            <iconify-icon icon="solar:server-square-bold-duotone" width="22" height="22" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-1" data-i18n="az12_name">App Service</h4>
+          <p class="text-xs text-gray-400" data-i18n="az12_desc">Web application hosting</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-400">Infrastructure</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- RESPONSIBLE AI                               -->
+  
+  <section id="rai" class="relative py-28 lg:py-40 bg-gray-50 dark:bg-[#0d1225] overflow-hidden" aria-label="Responsible AI">
+    <div class="blob blob-emerald" style="width: 500px; height: 500px; top: -100px; left: -150px;"></div>
+    <div class="blob blob-rose" style="width: 400px; height: 400px; bottom: -100px; right: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-6">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:shield-star-bold-duotone" width="16" height="16" style="color:#34d399" aria-hidden="true"></iconify-icon>
+          <span data-i18n="rai_badge">Responsible AI</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="rai_title">
+          Built with <span class="gradient-text">Responsibility</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto mb-4" data-i18n-html="rai_desc1">
+          Accessibility and inclusion are not add-ons to our project &mdash; they <strong class="text-gray-900 dark:text-white font-semibold">ARE</strong> the project.
+        </p>
+        <p class="reveal text-base text-gray-400 dark:text-gray-500 max-w-2xl mx-auto" data-i18n="rai_desc2">
+          Our system is built on the understanding that sign language is a complete, natural language. We treat sign and speech as two equally valid modalities, not as &ldquo;primary&rdquo; and &ldquo;assistive.&rdquo;
+        </p>
+      </div>
+
+      <!-- RAI Grid -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12 stagger-children">
+
+        <div class="reveal glass-card glow-violet rounded-2xl p-7">
+          <div class="w-12 h-12 rounded-xl icon-glow-violet flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:lock-bold-duotone" width="26" height="26" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="rai_privacy_title">Privacy</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n-html="rai_privacy_desc">Video streams processed in real-time, <strong class="text-gray-900 dark:text-white">no permanent storage</strong> by default. User-controlled data retention. Encrypted in transit and at rest. Azure Key Vault for all secrets.</p>
+        </div>
+
+        <div class="reveal glass-card glow-cyan rounded-2xl p-7">
+          <div class="w-12 h-12 rounded-xl icon-glow-cyan flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:eye-bold-duotone" width="26" height="26" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="rai_transparency_title">Transparency</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n-html="rai_transparency_desc">AI <strong class="text-gray-900 dark:text-white">confidence scores displayed</strong> to users (e.g., &ldquo;This sign was recognized with 85% confidence&rdquo;). Clear indication when AI is uncertain.</p>
+        </div>
+
+        <div class="reveal glass-card glow-amber rounded-2xl p-7">
+          <div class="w-12 h-12 rounded-xl icon-glow-amber flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:scale-bold-duotone" width="26" height="26" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="rai_fairness_title">Fairness</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n-html="rai_fairness_desc">300+ sign languages acknowledged as independent natural languages. Modular design prevents cultural/linguistic bias. <strong class="text-gray-900 dark:text-white">Tested across diverse</strong> skin tones, signing styles, and lighting.</p>
+        </div>
+
+        <div class="reveal glass-card glow-emerald rounded-2xl p-7">
+          <div class="w-12 h-12 rounded-xl icon-glow-emerald flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:shield-check-bold-duotone" width="26" height="26" style="color: #34d399" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="rai_safety_title">Content Safety</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n-html="rai_safety_desc">Azure Content Safety <strong class="text-gray-900 dark:text-white">filters harmful content</strong> in real-time transcription. Automatic detection and removal of inappropriate content across all output channels.</p>
+        </div>
+
+        <div class="reveal glass-card glow-rose rounded-2xl p-7">
+          <div class="w-12 h-12 rounded-xl icon-glow-rose flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:users-group-rounded-bold-duotone" width="26" height="26" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="rai_inclusive_title">Inclusive Design</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n-html="rai_inclusive_desc">Following Microsoft Inclusive Design principles. UI designed for accessibility <strong class="text-gray-900 dark:text-white">from the ground up</strong>, not retrofitted. Bidirectional emotion preservation for ALL participants.</p>
+        </div>
+
+        <div class="reveal glass-card glow-violet rounded-2xl p-7">
+          <div class="w-12 h-12 rounded-xl icon-glow-violet flex items-center justify-center mb-5">
+            <iconify-icon icon="solar:chat-round-like-bold-duotone" width="26" height="26" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2" data-i18n="rai_linguistic_title">Linguistic Respect</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n-html="rai_linguistic_desc">Sign language treated as <strong class="text-gray-900 dark:text-white">natural language with full grammar</strong> and expressiveness, not as gesture-based shorthand. Modular architecture respects each sign language's unique identity.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- SCALABILITY                                  -->
+  
+  <section id="scalability" class="relative py-28 lg:py-40 bg-white dark:bg-[#0a0e1a] overflow-hidden mesh-gradient" aria-label="Scalability">
+    <div class="blob blob-cyan" style="width: 500px; height: 500px; top: -100px; left: -150px;"></div>
+    <div class="blob blob-purple" style="width: 400px; height: 400px; bottom: -100px; right: -100px;"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:rocket-2-bold-duotone" width="16" height="16" style="color:#fb7185" aria-hidden="true"></iconify-icon>
+          <span data-i18n="scale_badge">Scalability</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="scale_title">
+          One Platform, <span class="gradient-text">Many Stories</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="scale_desc">The technology is scenario-agnostic. Only the narrative changes.</p>
+      </div>
+
+      <!-- Primary Demo -->
+      <div class="reveal glass-card glow-violet rounded-2xl p-8 lg:p-10 mb-8 relative overflow-hidden">
+        <div class="flex items-start gap-6">
+          <div class="w-14 h-14 rounded-xl icon-glow-violet flex items-center justify-center flex-shrink-0">
+            <iconify-icon icon="solar:buildings-3-bold-duotone" width="28" height="28" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white" data-i18n="scale_primary_title">Workplace Meetings</h3>
+              <span class="px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/20 to-cyan-500/20 border border-violet-500/20 text-xs font-bold text-violet-400 uppercase tracking-wider" data-i18n="scale_primary_badge">Primary Demo</span>
+            </div>
+            <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-i18n="scale_primary_desc">A Deaf colleague joins a team meeting and participates as an equal &mdash; signing, hearing responses, and being attributed in meeting notes. Full bidirectional real-time communication with emotion preservation and accessibility reporting.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expansion Scenarios -->
+      <div class="reveal mb-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <iconify-icon icon="solar:global-bold-duotone" width="20" height="20" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          <span data-i18n="scale_expansion">Expansion Scenarios</span>
+        </h3>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+        <div class="reveal glass-card glow-cyan rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg icon-glow-cyan flex items-center justify-center mb-4">
+            <iconify-icon icon="solar:book-bold-duotone" width="22" height="22" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-base font-bold text-gray-900 dark:text-white mb-2" data-i18n="scale_class_title">Classrooms</h4>
+          <p class="text-gray-400 dark:text-gray-500 text-xs leading-relaxed" data-i18n="scale_class_desc">Deaf students participate in lectures in real-time, asking questions via sign language that the professor hears as speech.</p>
+        </div>
+
+        <div class="reveal glass-card glow-rose rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg icon-glow-rose flex items-center justify-center mb-4">
+            <iconify-icon icon="solar:heart-pulse-2-bold-duotone" width="22" height="22" style="color: #fb7185" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-base font-bold text-gray-900 dark:text-white mb-2" data-i18n="scale_health_title">Healthcare</h4>
+          <p class="text-gray-400 dark:text-gray-500 text-xs leading-relaxed" data-i18n="scale_health_desc">Deaf patients communicate with doctors during consultation, with critical medical terminology accurately captured.</p>
+        </div>
+
+        <div class="reveal glass-card glow-emerald rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg icon-glow-emerald flex items-center justify-center mb-4">
+            <iconify-icon icon="solar:buildings-bold-duotone" width="22" height="22" style="color: #34d399" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-base font-bold text-gray-900 dark:text-white mb-2" data-i18n="scale_public_title">Public Services</h4>
+          <p class="text-gray-400 dark:text-gray-500 text-xs leading-relaxed" data-i18n="scale_public_desc">Government offices, courts, and emergency services become accessible without requiring a dedicated interpreter.</p>
+        </div>
+
+        <div class="reveal glass-card glow-amber rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg icon-glow-amber flex items-center justify-center mb-4">
+            <iconify-icon icon="solar:case-round-bold-duotone" width="22" height="22" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+          </div>
+          <h4 class="text-base font-bold text-gray-900 dark:text-white mb-2" data-i18n="scale_job_title">Job Interviews</h4>
+          <p class="text-gray-400 dark:text-gray-500 text-xs leading-relaxed" data-i18n="scale_job_desc">Deaf candidates participate in hiring interviews with real-time bidirectional translation for equal opportunity.</p>
+        </div>
+
+        <div class="reveal glass-card glow-violet rounded-xl p-6 sm:col-span-2 lg:col-span-2">
+          <div class="flex items-start gap-5">
+            <div class="w-10 h-10 rounded-lg icon-glow-violet flex items-center justify-center flex-shrink-0">
+              <iconify-icon icon="solar:shop-bold-duotone" width="22" height="22" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            </div>
+            <div>
+              <h4 class="text-base font-bold text-gray-900 dark:text-white mb-2" data-i18n="scale_kiosk_title">Unmanned Retail &amp; Service Kiosks</h4>
+              <p class="text-gray-400 dark:text-gray-500 text-xs leading-relaxed" data-i18n="scale_kiosk_desc">Deaf customers interact with service kiosks using sign language instead of text-only interfaces &mdash; enabling accessible self-service at airports, hospitals, government offices, and retail stores. Scales beyond hackathon into commercial deployment.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Scalability -->
+      <div class="reveal glass-card glow-cyan rounded-2xl p-8 mt-8">
+        <h3 class="text-base font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+          <iconify-icon icon="solar:server-bold-duotone" width="18" height="18" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+          <span data-i18n="scale_tech_title">Technical Scalability</span>
+        </h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="solar:check-circle-bold" width="18" height="18" style="color: #34d399" aria-hidden="true"></iconify-icon>
+            <span class="text-sm text-gray-600 dark:text-gray-300" data-i18n="scale_tech1">Microsoft Teams Bot</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="solar:check-circle-bold" width="18" height="18" style="color: #22d3ee" aria-hidden="true"></iconify-icon>
+            <span class="text-sm text-gray-600 dark:text-gray-300" data-i18n="scale_tech2">Cross-platform web</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="solar:check-circle-bold" width="18" height="18" style="color: #a78bfa" aria-hidden="true"></iconify-icon>
+            <span class="text-sm text-gray-600 dark:text-gray-300" data-i18n="scale_tech3">Multi-language sign</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="solar:check-circle-bold" width="18" height="18" style="color: #fbbf24" aria-hidden="true"></iconify-icon>
+            <span class="text-sm text-gray-600 dark:text-gray-300" data-i18n="scale_tech4">Horizontal scaling</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- TEAM SECTION                                 -->
+  
+  <section id="team" class="relative py-28 lg:py-40 bg-gray-50 dark:bg-[#0d1225] overflow-hidden" aria-label="Team">
+    <div class="blob blob-purple" style="width: 500px; height: 500px; top: -100px; right: -200px;"></div>
+    <div class="blob blob-emerald" style="width: 400px; height: 400px; bottom: -100px; left: -100px;"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <iconify-icon icon="solar:users-group-two-rounded-bold-duotone" width="16" height="16" style="color:#a78bfa" aria-hidden="true"></iconify-icon>
+          <span data-i18n="team_badge">Team 7</span>
+        </div>
+        <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="team_title">
+          Meet the <span class="gradient-text">Builders</span>
+        </h2>
+        <p class="reveal text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="team_desc">A passionate team committed to making communication accessible for everyone.</p>
+      </div>
+
+      <!-- Team Cards -->
+      <div class="grid sm:grid-cols-3 gap-8 stagger-children">
+
+        <!-- Somi Jeong -->
+        <div class="reveal">
+          <div class="team-card glass-card glow-violet rounded-2xl p-8 text-center h-full">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-violet-500/20">
+              <iconify-icon icon="solar:user-circle-bold-duotone" width="40" height="40" style="color: #fff" aria-hidden="true"></iconify-icon>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Somi Jeong</h3>
+            <p class="text-violet-400 font-semibold text-sm mb-4" data-i18n="team_role1">Team Lead</p>
+          </div>
+        </div>
+
+        <!-- Ying-Chih "Ollie" Ni -->
+        <div class="reveal">
+          <div class="team-card glass-card glow-cyan rounded-2xl p-8 text-center h-full">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-cyan-500/20">
+              <iconify-icon icon="solar:user-circle-bold-duotone" width="40" height="40" style="color: #fff" aria-hidden="true"></iconify-icon>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Ying-Chih &ldquo;Ollie&rdquo; Ni</h3>
+            <p class="text-cyan-400 font-semibold text-sm mb-4" data-i18n="team_role2">AI Engineer</p>
+          </div>
+        </div>
+
+        <!-- Tsaihsuan Lee -->
+        <div class="reveal">
+          <div class="team-card glass-card glow-emerald rounded-2xl p-8 text-center h-full">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-emerald-500/20">
+              <iconify-icon icon="solar:user-circle-bold-duotone" width="40" height="40" style="color: #fff" aria-hidden="true"></iconify-icon>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Tsaihsuan Lee</h3>
+            <p class="text-emerald-400 font-semibold text-sm mb-4" data-i18n="team_role3">UX &amp; Frontend</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- CTA SECTION                                  -->
+  
+  <section id="cta" class="relative py-28 lg:py-40 bg-white dark:bg-[#0a0e1a] overflow-hidden mesh-gradient" aria-label="Call to Action">
+    <div class="blob blob-purple" style="width: 600px; height: 600px; top: -200px; left: -200px;"></div>
+    <div class="blob blob-cyan" style="width: 500px; height: 500px; bottom: -150px; right: -150px;"></div>
+    <div class="blob blob-rose" style="width: 400px; height: 400px; top: 30%; left: 50%;"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+
+      <div class="reveal">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 via-cyan-400 to-emerald-400 flex items-center justify-center mx-auto mb-8 shadow-lg shadow-violet-500/25">
+          <iconify-icon icon="solar:hand-shake-bold" width="32" height="32" style="color: #fff" aria-hidden="true"></iconify-icon>
+        </div>
+      </div>
+
+      <h2 class="reveal text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 text-gray-900 dark:text-white" data-i18n-html="cta_title">
+        Experience <span class="gradient-text">Equal Communication</span>
+      </h2>
+      <p class="reveal text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-6 leading-relaxed font-light" data-i18n="cta_desc">
+        Join a world where sign language and speech meet seamlessly. No barriers, no delays, just conversation.
+      </p>
+
+      <!-- Quote reprise -->
+      <div class="reveal max-w-2xl mx-auto mb-10">
+        <p class="text-sm text-gray-400 dark:text-gray-500 italic" data-i18n="cta_quote">
+          &ldquo;We don't build a tool that 'helps' sign language users. We build an equal bridge between sign and speech.&rdquo;
+        </p>
+      </div>
+
+      <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="meeting-room.html"
+          class="group px-10 py-5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg hover:opacity-90 transition-all shadow-lg shadow-violet-500/25 flex items-center gap-3">
+          <iconify-icon icon="solar:videocamera-record-bold" width="22" height="22" aria-hidden="true"></iconify-icon>
+          <span data-i18n="cta_start">Start a Meeting</span>
+          <iconify-icon icon="solar:arrow-right-linear" width="18" height="18" class="transition-transform group-hover:translate-x-1" aria-hidden="true"></iconify-icon>
+        </a>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+          class="group px-8 py-5 rounded-xl glass-card text-gray-700 dark:text-gray-300 font-semibold text-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center gap-3">
+          <iconify-icon icon="mdi:github" width="22" height="22" aria-hidden="true"></iconify-icon>
+          <span data-i18n="cta_github">View on GitHub</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- FOOTER                                       -->
+  
+  <footer class="bg-gray-50 dark:bg-[#0d1225] border-t border-gray-200/50 dark:border-white/10 py-12" role="contentinfo">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-md bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+            <iconify-icon icon="solar:hand-shake-bold" width="14" height="14" style="color:#fff" aria-hidden="true"></iconify-icon>
+          </div>
+          <span class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
+            BridgeCast <span class="gradient-text text-xs font-semibold ml-0.5">AI</span>
+          </span>
+        </div>
+
+        <!-- Center text -->
+        <div class="text-center">
+          <p class="text-sm text-gray-400" data-i18n="footer_event">Microsoft Innovation Challenge &middot; March 2026</p>
+          <p class="text-xs text-gray-400 mt-1" data-i18n="footer_built">Built with 15 Azure Services &middot; Designed for Accessibility</p>
+        </div>
+
+        <!-- Tech badges -->
+        <div class="flex items-center gap-2 flex-wrap justify-center">
+          <span class="px-3 py-1 rounded-md bg-violet-500/10 border border-violet-500/10 text-xs text-violet-400 font-medium">Azure</span>
+          <span class="px-3 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/10 text-xs text-cyan-400 font-medium">GPT-4o</span>
+          <span class="px-3 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/10 text-xs text-emerald-400 font-medium">Uni-Sign</span>
+          <span class="px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/10 text-xs text-amber-400 font-medium">RTMPose</span>
+        </div>
+
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="mt-8 pt-8 border-t border-gray-200/50 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-gray-400" data-i18n="footer_copyright">&copy; 2026 BridgeCast AI &middot; Team 7. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="#" class="text-xs text-gray-400 hover:text-violet-400 transition-colors" data-i18n="footer_privacy">Privacy Policy</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-cyan-400 transition-colors" data-i18n="footer_terms">Terms of Service</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-emerald-400 transition-colors" data-i18n="footer_accessibility">Accessibility</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  
+  <!-- SCRIPTS                                      -->
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // ---
+      // Scroll-based reveal animations
+      // ---
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px',
+      });
+
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+      // ---
+      // Animated counters
+      // ---
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.getAttribute('data-count'));
+            const suffix = el.getAttribute('data-suffix') || '';
+            const duration = 2000;
+            const start = performance.now();
+
+            function animate(now) {
+              const elapsed = now - start;
+              const progress = Math.min(elapsed / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              const current = Math.floor(eased * target);
+              el.textContent = current + suffix;
+              if (progress < 1) {
+                requestAnimationFrame(animate);
+              } else {
+                el.textContent = target + suffix;
+              }
+            }
+
+            requestAnimationFrame(animate);
+            counterObserver.unobserve(el);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.stat-number[data-count]').forEach((el) => {
+        counterObserver.observe(el);
+      });
+
+      // ---
+      // Progress bar animation
+      // ---
+      const progressObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const bars = entry.target.querySelectorAll('.progress-bar-fill');
+            bars.forEach((bar) => {
+              const width = bar.style.width;
+              bar.style.width = '0%';
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  bar.style.width = width;
+                });
+              });
+            });
+            progressObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      document.querySelectorAll('.glass-card').forEach((card) => {
+        if (card.querySelector('.progress-bar-fill')) {
+          progressObserver.observe(card);
+        }
+      });
+
+      // ---
+      // Navigation scroll effect
+      // ---
+      const nav = document.getElementById('main-nav');
+      let lastScroll = 0;
+
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        if (scrollY > lastScroll && scrollY > 400) {
+          nav.style.transform = 'translateX(-50%) translateY(-120%)';
+        } else {
+          nav.style.transform = 'translateX(-50%) translateY(0)';
+        }
+        lastScroll = scrollY;
+      }, { passive: true });
+
+      // ---
+      // Mobile menu toggle
+      // ---
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileBackdrop = document.getElementById('mobile-menu-backdrop');
+      let menuOpen = false;
+
+      function toggleMenu() {
+        menuOpen = !menuOpen;
+        mobileMenu.classList.toggle('hidden', !menuOpen);
+        mobileBtn.setAttribute('aria-expanded', menuOpen.toString());
+      }
+
+      mobileBtn.addEventListener('click', toggleMenu);
+      mobileBackdrop.addEventListener('click', toggleMenu);
+
+      document.querySelectorAll('.mobile-nav-link').forEach((link) => {
+        link.addEventListener('click', () => {
+          if (menuOpen) toggleMenu();
+        });
+      });
+
+      // ---
+      // Smooth scroll for anchor links
+      // ---
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', (e) => {
+          const href = anchor.getAttribute('href');
+          if (href === '#') return;
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const offset = 80;
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        });
+      });
+
+      // ---
+      // Dark/Light Mode Toggle
+      // ---
+      function setTheme(isDark) {
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }
+
+      // Initialize theme from localStorage (default: dark)
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        setTheme(false);
+      } else {
+        setTheme(true);
+      }
+
+      // Toggle buttons
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+
+      function handleToggle() {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(!isDark);
+      }
+
+      if (themeToggle) themeToggle.addEventListener('click', handleToggle);
+      if (themeToggleMobile) themeToggleMobile.addEventListener('click', handleToggle);
+
+      // ---
+      // i18n — 3-Language Support
+      // ---
+      const LANGS = ['en', 'ko', 'zh-tw'];
+      const LANG_LABELS = { en: '🇺🇸 EN', ko: '🇰🇷 KO', 'zh-tw': '🇹🇼 ZH' };
+
+      const T = {
+        en: {
+          nav_problem:'Problem', nav_philosophy:'Philosophy', nav_how:'How It Works', nav_features:'Features', nav_azure:'Azure', nav_team:'Team', nav_join:'Join Meeting',
+          hero_badge:'Bridging Communication', hero_quote:'"When a hearing person enters a room, communication has already begun. When a Deaf person enters the same room, they must first fight for the right to communicate."',
+          hero_cta_join:'Start a Meeting', hero_cta_learn:'Learn More', hero_sign_language:'Sign Language', hero_speech:'Speech', hero_scroll:'Scroll',
+          stat1_label:'430M+', stat1_sub:'Deaf & Hard of Hearing', stat2_label:'300+', stat2_sub:'Distinct Sign Languages', stat3_label:'1-Way', stat3_sub:'Current Industry Gap',
+          about_badge:'The Problem', about_desc:'Over 430 million people worldwide have disabling hearing loss.<br>Current meeting tools weren\'t designed for bidirectional communication.',
+          before_label:'Before', before_title:'Before BridgeCast', after_label:'After', after_title:'After BridgeCast', after_quote:'Result: Deaf colleagues participate equally from day one',
+          philosophy_badge:'Why This Matters', myth1_title:'Myth #1: "Sign language is universal"', myth2_title:'Myth #2: "Sign language is just gestures"', myth3_title:'Myth #3: "Text captions are enough"', myth_busted:'Busted',
+          design_title:'Our Design Response', design_misconception:'Misconception', design_response:'Our Response',
+          how_badge:'How It Works', how_desc:'Real-time AI bridges both directions seamlessly, plus avatar visualization.',
+          dir1_title:'Sign → Speech', dir1_sub:'Core differentiator', dir1_desc:'Camera captures sign language → Uni-Sign AI recognizes gestures → converts to text → Azure TTS plays audio.',
+          dir2_title:'Speech → Text', dir2_sub:'Real-time captions', dir2_desc:'Microphone captures speech → Azure STT provides real-time transcription → on-screen subtitles appear instantly.',
+          dir3_title:'Speech → Sign Avatar', dir3_sub:'True bidirectional', dir3_desc:'Azure STT transcribes → ASL gloss via Azure OpenAI → sign animation clips play on avatar.',
+          pipeline_title:'Sign Language Recognition Pipeline', pipeline_sub:'End-to-end AI pipeline from camera input to text output',
+          pipe1_title:'Video Capture', pipe1_sub:'30fps webcam', pipe2_title:'Pose Estimation', pipe2_sub:'RTMPose', pipe3_title:'Feature Extraction', pipe3_sub:'ST-GCN', pipe4_title:'Sequence Model', pipe4_sub:'mT5 Decoder', pipe5_title:'Text Generation', pipe5_sub:'Natural language', pipe6_title:'TTS Output', pipe6_sub:'Azure Speech',
+          feat_badge:'Key Features', feat_desc:'What makes BridgeCast different',
+          feat_notes_title:'AI Meeting Notes', feat_emotion_title:'Emotion Detection', feat_avatar_title:'3D Sign Avatar', feat_avatar_detail:'Cute chibi character signs in real-time',
+          feat_emergency_title:'Emergency Alerts', feat_diarization_title:'Speaker Attribution', feat_dashboard_title:'Accessibility Dashboard', feat_safety_badge:'Content Safety',
+          impact_badge:'Measurable Impact', impact_desc:'Real results, real impact', impact_perf_title:'Performance Metrics',
+          perf1_label:'Sign Recognition', perf1_sub:'< 500ms latency', perf2_label:'Speech-to-Text', perf2_sub:'Real-time streaming', perf3_label:'Translation', perf3_sub:'Multi-language', perf4_label:'Avatar Response', perf4_sub:'< 300ms render',
+          report_title:'Accessibility Report',
+          report1_label:'Participation Balance', report1_sub:'Equal voice/sign ratio', report2_label:'Bidirectional Rate', report2_sub:'Both directions active', report3_label:'Response Latency', report3_sub:'Under 1 second', report4_label:'Emotion Preservation', report4_sub:'Tone and expression', report5_label:'Safety Filtering', report5_sub:'Content moderation', report6_label:'Session Recording', report6_sub:'Full attribution',
+          azure_badge:'15 Azure Services', azure_desc:'Enterprise-grade cloud infrastructure',
+          az1_name:'Speech Service', az1_desc:'Real-time STT & TTS',
+          az2_name:'OpenAI Service', az2_desc:'GPT-4o meeting intelligence',
+          az3_name:'AI Vision', az3_desc:'Sign language recognition',
+          az4_name:'Communication Services', az4_desc:'Video rooms & tokens',
+          az5_name:'Cosmos DB', az5_desc:'Meeting & user data',
+          az6_name:'Content Safety', az6_desc:'Real-time moderation',
+          az7_name:'Translator', az7_desc:'Multi-language support',
+          az8_name:'Monitor', az8_desc:'Application Insights',
+          az9_name:'Key Vault', az9_desc:'Secret management',
+          az10_name:'Functions', az10_desc:'Serverless processing',
+          az11_name:'App Service', az11_desc:'Web app hosting',
+          az12_name:'GPU VM', az12_desc:'NC4as T4 inference',
+          rai_badge:'Responsible AI', rai_desc2:'Following Microsoft\'s six AI principles',
+          rai_fairness_title:'Fairness', rai_privacy_title:'Privacy & Security', rai_inclusive_title:'Inclusiveness', rai_transparency_title:'Transparency', rai_safety_title:'Reliability & Safety', rai_linguistic_title:'Linguistic Rights',
+          scale_badge:'Scalability', scale_desc:'Beyond meetings — a platform for universal accessibility',
+          scale_primary_badge:'Primary Market', scale_primary_title:'Workplace Meetings', scale_primary_desc:'Enterprise video conferencing with built-in accessibility',
+          scale_expansion:'Expansion Scenarios',
+          scale_class_title:'Classrooms', scale_class_desc:'Inclusive education',
+          scale_health_title:'Healthcare', scale_health_desc:'Patient-provider communication',
+          scale_public_title:'Public Services', scale_public_desc:'Government accessibility',
+          scale_job_title:'Job Interviews', scale_job_desc:'Equal opportunity hiring',
+          scale_kiosk_title:'Retail Kiosks', scale_kiosk_desc:'Customer service',
+          scale_tech_title:'Technical Architecture', scale_tech1:'Azure Container Instances for auto-scaling', scale_tech2:'CDN for global low-latency delivery', scale_tech3:'Cosmos DB multi-region replication', scale_tech4:'GPU VM pool for inference scaling',
+          team_badge:'Team', team_desc:'Built by Team BridgeCast', team_role1:'Somi', team_role2:'Ollie', team_role3:'TSAIHSUAN',
+          cta_quote:'"Technology should adapt to people, not the other way around."',
+          cta_start:'Join a Meeting', cta_desc:'Every meeting should be accessible. Start using BridgeCast AI today.', cta_github:'View on GitHub',
+          footer_event:'Microsoft Innovation Challenge March 2026', footer_copyright:'© 2026 BridgeCast AI. Making communication accessible for everyone.',
+          footer_built:'Built with Azure AI', footer_accessibility:'Accessibility First', footer_privacy:'Privacy Policy', footer_terms:'Terms of Service',
+          scenario_title:'Demo Scenario', scenario_sub:'A Deaf Colleague\'s First Team Meeting',
+          philosophy_myths_intro:'Common misconceptions about sign language that shaped our design decisions:',
+          philosophy_myths_conclusion:'These insights directly shaped how BridgeCast AI approaches bidirectional communication.',
+          design_misc1:'"Sign language is less expressive"', design_misc2:'"All Deaf people can lip-read"', design_misc3:'"Technology has solved this"',
+          // data-i18n-html keys (with HTML formatting)
+          hero_headline:'Breaking the<br><span class="gradient-text">Communication Barrier</span>',
+          hero_subtitle:'Bridging <strong class="text-gray-900 dark:text-white font-semibold">sign language</strong> and <strong class="text-gray-900 dark:text-white font-semibold">speech</strong> in real time &mdash; so every meeting becomes truly accessible for everyone.',
+          about_title:'A World Still <span class="gradient-text">Divided</span>',
+          before_item1:'Sits silently, reading delayed and often <strong class="text-gray-900 dark:text-white">inaccurate auto-captions</strong>',
+          before_item2:'<strong class="text-gray-900 dark:text-white">Cannot respond naturally</strong> &mdash; typing is slow and breaks the flow',
+          before_item3:'Misses <strong class="text-gray-900 dark:text-white">humor, urgency, and emotional nuances</strong> of the conversation',
+          before_item4:'Receives <strong class="text-gray-900 dark:text-white">no meeting notes</strong> attributed to them &mdash; because they never &ldquo;spoke&rdquo;',
+          before_item5:'Remains an <strong class="text-gray-900 dark:text-white">observer</strong>, not a participant',
+          after_item1:'<strong class="text-gray-900 dark:text-white">Manager speaks</strong> &rarr; real-time captions + signing avatar shows message in ASL',
+          after_item2:'<strong class="text-gray-900 dark:text-white">Deaf colleague responds in sign</strong> &rarr; AI recognizes &rarr; TTS plays their voice naturally',
+          after_item3:'<strong class="text-gray-900 dark:text-white">Bidirectional flow</strong> continues seamlessly for the entire meeting',
+          after_item4:'<strong class="text-gray-900 dark:text-white">Emotion preserved</strong> in both directions &mdash; tone in speech, facial expressions in sign',
+          after_item5:'<strong class="text-gray-900 dark:text-white">Meeting ends</strong> &rarr; speaker-attributed transcript including &ldquo;Somi (sign): ...&rdquo;, emotion tags, action items, and Accessibility Report',
+          philosophy_title:'Understanding <span class="gradient-text">Sign Language</span>',
+          philosophy_desc:'This is not a technical spec &mdash; it is the <strong class="text-gray-900 dark:text-white font-semibold">philosophical foundation</strong> of our entire project.',
+          myth1_desc:'Sign languages were not invented by anyone. They <strong class="text-gray-900 dark:text-white">emerged naturally</strong> within Deaf communities over centuries, just like spoken languages. They have their own grammar, syntax, and idiomatic expressions.',
+          myth2_desc:'There are over <strong class="text-gray-900 dark:text-white">300+ distinct sign languages</strong> worldwide. ASL (American Sign Language) is completely different from BSL (British Sign Language), even though both countries speak English.',
+          myth3_desc:'Sign languages are <strong class="text-gray-900 dark:text-white">equal to spoken languages</strong> in structural complexity and expressive power. In some domains &mdash; spatial relationships, simultaneous information &mdash; they are actually <em>more</em> expressive.',
+          myth3_insight:'A raised eyebrow in ASL can change a statement into a question &mdash; facial expressions carry <strong class="text-gray-900 dark:text-white">grammatical meaning</strong>.',
+          design_resp1:'<strong class="text-gray-900 dark:text-white">Modular architecture</strong> &mdash; each sign language (ASL, KSL, TSL, BSL...) gets its own recognition model, swappable without rebuilding the system.',
+          design_resp2:'<strong class="text-gray-900 dark:text-white">Equal bridge, not assistive tool</strong> &mdash; sign and speech are two equally valid input/output modalities. Neither is primary.',
+          design_resp3:'<strong class="text-gray-900 dark:text-white">Bidirectional emotion preservation</strong> &mdash; we preserve emotional information in both directions (tone/pitch in speech; facial expressions in sign).',
+          how_title:'Three Directions of <span class="gradient-text">Equal Access</span>',
+          feat_title:'Differentiation <span class="gradient-text">Features</span>',
+          feat_diarization_desc:'Identifies <strong class="text-gray-900 dark:text-white">who said what</strong> &mdash; both voice and sign language. Meeting notes become actionable with clear attribution: &ldquo;Somi (sign): ...&rdquo; / &ldquo;Ollie (voice): ...&rdquo;',
+          feat_emotion_desc:'Tags each utterance with sentiment in <strong class="text-gray-900 dark:text-white">both directions</strong>.',
+          feat_emergency_desc:'Detects <strong class="text-gray-900 dark:text-white">urgent language</strong> and triggers an immediate visual alert for Deaf participants.',
+          feat_dashboard_desc:'Real-time speaking time visualization that <strong class="text-gray-900 dark:text-white">directly proves</strong> measurable accessibility impact.',
+          feat_avatar_desc:'Spoken language &rarr; sign language animation. True bidirectional completion &mdash; Deaf users receive information not only as text but in their <strong class="text-gray-900 dark:text-white">native modality</strong>.',
+          feat_notes_desc:'Auto-generates speaker-attributed transcript, emotion tags, key decisions, action items, and a quantitative <strong class="text-gray-900 dark:text-white">Accessibility Report</strong>.',
+          impact_title:'Numbers That <span class="gradient-text">Prove It</span>',
+          azure_title:'Powered by <span class="gradient-text">15 Azure Services</span>',
+          rai_title:'Built with <span class="gradient-text">Responsibility</span>',
+          rai_desc1:'Accessibility and inclusion are not add-ons to our project &mdash; they <strong class="text-gray-900 dark:text-white font-semibold">ARE</strong> the project.',
+          rai_privacy_desc:'Video streams processed in real-time, <strong class="text-gray-900 dark:text-white">no permanent storage</strong> by default. User-controlled data retention. Encrypted in transit and at rest. Azure Key Vault for all secrets.',
+          rai_transparency_desc:'AI <strong class="text-gray-900 dark:text-white">confidence scores displayed</strong> to users (e.g., &ldquo;This sign was recognized with 85% confidence&rdquo;). Clear indication when AI is uncertain.',
+          rai_fairness_desc:'300+ sign languages acknowledged as independent natural languages. Modular design prevents cultural/linguistic bias. <strong class="text-gray-900 dark:text-white">Tested across diverse</strong> skin tones, signing styles, and lighting.',
+          rai_safety_desc:'Azure Content Safety <strong class="text-gray-900 dark:text-white">filters harmful content</strong> in real-time transcription. Automatic detection and removal of inappropriate content across all output channels.',
+          rai_inclusive_desc:'Following Microsoft Inclusive Design principles. UI designed for accessibility <strong class="text-gray-900 dark:text-white">from the ground up</strong>, not retrofitted. Bidirectional emotion preservation for ALL participants.',
+          rai_linguistic_desc:'Sign language treated as <strong class="text-gray-900 dark:text-white">natural language with full grammar</strong> and expressiveness, not as gesture-based shorthand. Modular architecture respects each sign language\'s unique identity.',
+          scale_title:'One Platform, <span class="gradient-text">Many Stories</span>',
+          team_title:'Meet the <span class="gradient-text">Builders</span>',
+          cta_title:'Experience <span class="gradient-text">Equal Communication</span>',
+        },
+        ko: {
+          nav_problem:'문제', nav_philosophy:'비전', nav_how:'작동 원리', nav_features:'기능', nav_azure:'Azure', nav_team:'팀', nav_join:'미팅 참여',
+          hero_badge:'소통의 다리를 잇다', hero_quote:'"청인이 방에 들어가면 소통은 이미 시작되어 있습니다. 청각장애인이 같은 방에 들어가면, 먼저 소통할 권리부터 싸워야 합니다."',
+          hero_cta_join:'미팅 시작하기', hero_cta_learn:'더 알아보기', hero_sign_language:'수어', hero_speech:'음성', hero_scroll:'스크롤',
+          stat1_label:'4.3억+', stat1_sub:'청각장애인', stat2_label:'300+', stat2_sub:'개별 수어 언어', stat3_label:'단방향', stat3_sub:'현재 산업 격차',
+          about_badge:'문제', about_desc:'전 세계 4억 3천만 명이 청력 손실을 겪고 있습니다.<br>현재의 화상회의 도구는 양방향 소통을 위해 설계되지 않았습니다.',
+          before_label:'이전', before_title:'BridgeCast 이전', after_label:'이후', after_title:'BridgeCast 이후', after_quote:'결과: 청각장애인 동료가 첫날부터 동등하게 참여합니다',
+          philosophy_badge:'왜 중요한가', myth1_title:'오해 #1: "수어는 전 세계 공통이다"', myth2_title:'오해 #2: "수어는 단순한 제스처이다"', myth3_title:'오해 #3: "텍스트 자막이면 충분하다"', myth_busted:'팩트체크',
+          design_title:'우리의 디자인 대응', design_misconception:'오해', design_response:'우리의 대응',
+          how_badge:'작동 원리', how_desc:'실시간 AI가 양방향 소통을 매끄럽게 연결하고, 아바타 시각화까지 제공합니다.',
+          dir1_title:'수어 → 음성', dir1_sub:'핵심 차별점', dir1_desc:'카메라가 수어 촬영 → Uni-Sign AI 제스처 인식 → 텍스트 변환 → Azure TTS 음성 출력.',
+          dir2_title:'음성 → 텍스트', dir2_sub:'실시간 자막', dir2_desc:'마이크 음성 캡처 → Azure STT 실시간 전사 → 화면 자막 즉시 표시.',
+          dir3_title:'음성 → 수어 아바타', dir3_sub:'진정한 양방향', dir3_desc:'Azure STT 전사 → Azure OpenAI로 ASL 글로스 변환 → 아바타 수어 애니메이션 재생.',
+          pipeline_title:'수어 인식 파이프라인', pipeline_sub:'카메라 입력부터 텍스트 출력까지 AI 파이프라인',
+          pipe1_title:'영상 캡처', pipe1_sub:'30fps 웹캠', pipe2_title:'포즈 추정', pipe2_sub:'RTMPose', pipe3_title:'특징 추출', pipe3_sub:'ST-GCN', pipe4_title:'시퀀스 모델', pipe4_sub:'mT5 디코더', pipe5_title:'텍스트 생성', pipe5_sub:'자연어', pipe6_title:'TTS 출력', pipe6_sub:'Azure Speech',
+          feat_badge:'핵심 기능', feat_desc:'BridgeCast만의 차별점',
+          feat_notes_title:'AI 회의록', feat_emotion_title:'감정 감지', feat_avatar_title:'3D 수어 아바타', feat_avatar_detail:'귀여운 캐릭터가 실시간으로 수어를 보여줍니다',
+          feat_emergency_title:'긴급 알림', feat_diarization_title:'화자 구분', feat_dashboard_title:'접근성 대시보드', feat_safety_badge:'콘텐츠 안전',
+          impact_badge:'측정 가능한 성과', impact_desc:'실제 결과, 실제 영향', impact_perf_title:'성능 지표',
+          perf1_label:'수어 인식', perf1_sub:'< 500ms 지연', perf2_label:'음성→텍스트', perf2_sub:'실시간 스트리밍', perf3_label:'번역', perf3_sub:'다국어 지원', perf4_label:'아바타 응답', perf4_sub:'< 300ms 렌더링',
+          report_title:'접근성 리포트',
+          report1_label:'참여 균형', report1_sub:'음성/수어 비율 동등', report2_label:'양방향 비율', report2_sub:'양방향 모두 활성', report3_label:'응답 지연', report3_sub:'1초 미만', report4_label:'감정 보존', report4_sub:'톤과 표현', report5_label:'안전 필터링', report5_sub:'콘텐츠 관리', report6_label:'세션 기록', report6_sub:'완전한 귀속',
+          azure_badge:'15개 Azure 서비스', azure_desc:'엔터프라이즈급 클라우드 인프라',
+          az1_name:'Speech 서비스', az1_desc:'실시간 STT & TTS', az2_name:'OpenAI 서비스', az2_desc:'GPT-4o 회의 인텔리전스', az3_name:'AI Vision', az3_desc:'수어 인식', az4_name:'Communication Services', az4_desc:'영상 룸 & 토큰', az5_name:'Cosmos DB', az5_desc:'회의 & 사용자 데이터', az6_name:'Content Safety', az6_desc:'실시간 콘텐츠 관리', az7_name:'Translator', az7_desc:'다국어 지원', az8_name:'Monitor', az8_desc:'Application Insights', az9_name:'Key Vault', az9_desc:'비밀 관리', az10_name:'Functions', az10_desc:'서버리스 처리', az11_name:'App Service', az11_desc:'웹 앱 호스팅', az12_name:'GPU VM', az12_desc:'NC4as T4 추론',
+          rai_badge:'책임 있는 AI', rai_desc2:'Microsoft의 6가지 AI 원칙을 따릅니다',
+          rai_fairness_title:'공정성', rai_privacy_title:'개인정보 보호', rai_inclusive_title:'포용성', rai_transparency_title:'투명성', rai_safety_title:'신뢰성 & 안전', rai_linguistic_title:'언어 권리',
+          scale_badge:'확장성', scale_desc:'회의를 넘어 — 보편적 접근성을 위한 플랫폼',
+          scale_primary_badge:'주요 시장', scale_primary_title:'업무 회의', scale_primary_desc:'접근성이 내장된 기업 화상회의',
+          scale_expansion:'확장 시나리오',
+          scale_class_title:'교실', scale_class_desc:'모두를 위한 교육', scale_health_title:'의료', scale_health_desc:'환자-의료진 소통', scale_public_title:'공공 서비스', scale_public_desc:'정부 접근성', scale_job_title:'면접', scale_job_desc:'공정한 채용', scale_kiosk_title:'리테일 키오스크', scale_kiosk_desc:'고객 서비스',
+          scale_tech_title:'기술 아키텍처', scale_tech1:'Azure Container 자동 스케일링', scale_tech2:'CDN 글로벌 저지연 배포', scale_tech3:'Cosmos DB 멀티 리전 복제', scale_tech4:'GPU VM 풀 추론 스케일링',
+          team_badge:'팀', team_desc:'Team BridgeCast', team_role1:'Somi', team_role2:'Ollie', team_role3:'TSAIHSUAN',
+          cta_quote:'"기술은 사람에게 맞춰야 합니다. 그 반대가 아닙니다."',
+          cta_start:'미팅 참여하기', cta_desc:'모든 회의는 접근 가능해야 합니다. 지금 BridgeCast AI를 시작하세요.', cta_github:'GitHub에서 보기',
+          footer_event:'Microsoft Innovation Challenge 2026년 3월', footer_copyright:'© 2026 BridgeCast AI. 모든 사람을 위한 접근 가능한 소통.',
+          footer_built:'Azure AI로 구축', footer_accessibility:'접근성 우선', footer_privacy:'개인정보 처리방침', footer_terms:'이용약관',
+          scenario_title:'데모 시나리오', scenario_sub:'청각장애인 동료의 첫 팀 미팅',
+          philosophy_myths_intro:'수어에 대한 일반적인 오해들이 우리의 디자인 결정에 영향을 주었습니다:',
+          philosophy_myths_conclusion:'이러한 인사이트가 BridgeCast AI의 양방향 소통 접근 방식을 직접적으로 형성했습니다.',
+          design_misc1:'"수어는 표현력이 떨어진다"', design_misc2:'"모든 청각장애인이 독순술이 가능하다"', design_misc3:'"기술이 이미 이 문제를 해결했다"',
+          // data-i18n-html 키 (HTML 포맷)
+          hero_headline:'소통의<br><span class="gradient-text">장벽을 허물다</span>',
+          hero_subtitle:'<strong class="text-gray-900 dark:text-white font-semibold">수어</strong>와 <strong class="text-gray-900 dark:text-white font-semibold">음성</strong>을 실시간으로 연결 &mdash; 모든 회의를 진정으로 접근 가능하게.',
+          about_title:'아직 <span class="gradient-text">나뉘어진</span> 세상',
+          before_item1:'지연되고 종종 <strong class="text-gray-900 dark:text-white">부정확한 자동 자막</strong>을 읽으며 조용히 앉아있음',
+          before_item2:'<strong class="text-gray-900 dark:text-white">자연스럽게 응답할 수 없음</strong> &mdash; 타이핑은 느리고 흐름을 끊음',
+          before_item3:'대화의 <strong class="text-gray-900 dark:text-white">유머, 긴급함, 감정의 뉘앙스</strong>를 놓침',
+          before_item4:'<strong class="text-gray-900 dark:text-white">회의록에 자신의 이름이 없음</strong> &mdash; &ldquo;말하지&rdquo; 않았기 때문에',
+          before_item5:'참여자가 아닌 <strong class="text-gray-900 dark:text-white">관찰자</strong>로 남음',
+          after_item1:'<strong class="text-gray-900 dark:text-white">매니저가 말함</strong> &rarr; 실시간 자막 + 수어 아바타가 ASL로 메시지 표시',
+          after_item2:'<strong class="text-gray-900 dark:text-white">청각장애인 동료가 수어로 응답</strong> &rarr; AI 인식 &rarr; TTS가 자연스러운 목소리로 재생',
+          after_item3:'<strong class="text-gray-900 dark:text-white">양방향 흐름</strong>이 회의 전체에 걸쳐 원활하게 계속됨',
+          after_item4:'<strong class="text-gray-900 dark:text-white">감정이 보존됨</strong> &mdash; 음성의 톤과 수어의 표정 모두',
+          after_item5:'<strong class="text-gray-900 dark:text-white">회의 종료</strong> &rarr; &ldquo;Somi (수어): ...&rdquo; 포함 화자별 회의록, 감정 태그, 실행 항목, 접근성 리포트',
+          philosophy_title:'<span class="gradient-text">수어</span> 이해하기',
+          philosophy_desc:'이것은 기술 사양이 아닙니다 &mdash; 프로젝트 전체의 <strong class="text-gray-900 dark:text-white font-semibold">철학적 기반</strong>입니다.',
+          myth1_desc:'수어는 누군가 발명한 것이 아닙니다. 수백 년에 걸쳐 청각장애인 커뮤니티 안에서 <strong class="text-gray-900 dark:text-white">자연스럽게 발생</strong>했으며, 고유한 문법, 구문, 관용 표현을 가지고 있습니다.',
+          myth2_desc:'세계에 <strong class="text-gray-900 dark:text-white">300개 이상의 독립적인 수어</strong>가 있습니다. 미국 수어(ASL)는 영국 수어(BSL)와 완전히 다릅니다. 두 나라 모두 영어를 사용하는데도요.',
+          myth3_desc:'수어는 구조적 복잡성과 표현력에서 음성 언어와 <strong class="text-gray-900 dark:text-white">동등합니다</strong>. 공간 관계, 동시 정보 전달 등에서는 오히려 <em>더</em> 표현력이 풍부합니다.',
+          myth3_insight:'ASL에서 눈썹을 올리면 진술이 질문으로 바뀝니다 &mdash; 표정이 <strong class="text-gray-900 dark:text-white">문법적 의미</strong>를 전달합니다.',
+          design_resp1:'<strong class="text-gray-900 dark:text-white">모듈러 아키텍처</strong> &mdash; 각 수어(ASL, KSL, TSL, BSL...)는 고유한 인식 모델을 가지며, 시스템 재구축 없이 교체 가능합니다.',
+          design_resp2:'<strong class="text-gray-900 dark:text-white">보조 도구가 아닌 동등한 다리</strong> &mdash; 수어와 음성은 동등하게 유효한 입출력 방식입니다. 어느 쪽도 우선이 아닙니다.',
+          design_resp3:'<strong class="text-gray-900 dark:text-white">양방향 감정 보존</strong> &mdash; 양방향 모두에서 감정 정보를 보존합니다 (음성의 톤/피치; 수어의 표정).',
+          how_title:'<span class="gradient-text">동등한 접근</span>의 세 방향',
+          feat_title:'차별화 <span class="gradient-text">기능</span>',
+          feat_diarization_desc:'음성과 수어 모두에서 <strong class="text-gray-900 dark:text-white">누가 무엇을 말했는지</strong> 식별합니다. 명확한 귀속으로 회의록이 실행 가능해집니다: &ldquo;Somi (수어): ...&rdquo; / &ldquo;Ollie (음성): ...&rdquo;',
+          feat_emotion_desc:'<strong class="text-gray-900 dark:text-white">양방향</strong>으로 각 발화에 감정을 태깅합니다.',
+          feat_emergency_desc:'<strong class="text-gray-900 dark:text-white">긴급 언어</strong>를 감지하고 청각장애인 참가자에게 즉각적인 시각 알림을 보냅니다.',
+          feat_dashboard_desc:'실시간 발언 시간 시각화로 측정 가능한 접근성 영향을 <strong class="text-gray-900 dark:text-white">직접 증명</strong>합니다.',
+          feat_avatar_desc:'음성 &rarr; 수어 애니메이션. 진정한 양방향 완성 &mdash; 청각장애인 사용자가 텍스트뿐만 아니라 <strong class="text-gray-900 dark:text-white">모국어 방식</strong>으로 정보를 받습니다.',
+          feat_notes_desc:'화자 귀속 회의록, 감정 태그, 핵심 결정, 실행 항목, 정량적 <strong class="text-gray-900 dark:text-white">접근성 리포트</strong>를 자동 생성합니다.',
+          impact_title:'<span class="gradient-text">증명하는</span> 숫자들',
+          azure_title:'<span class="gradient-text">15개 Azure 서비스</span>로 구동',
+          rai_title:'<span class="gradient-text">책임감</span>으로 구축',
+          rai_desc1:'접근성과 포용은 프로젝트에 추가된 것이 아닙니다 &mdash; 이것이 프로젝트 <strong class="text-gray-900 dark:text-white font-semibold">그 자체</strong>입니다.',
+          rai_privacy_desc:'영상 스트림은 실시간 처리되며, 기본적으로 <strong class="text-gray-900 dark:text-white">영구 저장 없음</strong>. 사용자 제어 데이터 보존. 전송 및 저장 시 암호화. Azure Key Vault로 모든 비밀 관리.',
+          rai_transparency_desc:'AI <strong class="text-gray-900 dark:text-white">신뢰도 점수가 사용자에게 표시</strong>됩니다 (예: &ldquo;이 수어는 85% 신뢰도로 인식되었습니다&rdquo;). AI가 불확실할 때 명확하게 표시.',
+          rai_fairness_desc:'300개 이상의 수어를 독립적인 자연어로 인정. 모듈러 설계로 문화적/언어적 편향을 방지. <strong class="text-gray-900 dark:text-white">다양한 피부톤, 수어 스타일, 조명</strong>에서 테스트.',
+          rai_safety_desc:'Azure Content Safety가 실시간 전사에서 <strong class="text-gray-900 dark:text-white">유해 콘텐츠를 필터링</strong>합니다. 모든 출력 채널에서 부적절한 콘텐츠 자동 감지 및 제거.',
+          rai_inclusive_desc:'Microsoft Inclusive Design 원칙을 따릅니다. UI는 접근성을 <strong class="text-gray-900 dark:text-white">처음부터</strong> 설계했으며, 사후에 추가한 것이 아닙니다. 모든 참가자를 위한 양방향 감정 보존.',
+          rai_linguistic_desc:'수어를 <strong class="text-gray-900 dark:text-white">완전한 문법과 표현력을 가진 자연어</strong>로 다루며, 제스처 기반 약어로 취급하지 않습니다. 모듈러 아키텍처가 각 수어의 고유한 정체성을 존중합니다.',
+          scale_title:'하나의 플랫폼, <span class="gradient-text">많은 이야기</span>',
+          team_title:'<span class="gradient-text">만든 사람들</span>',
+          cta_title:'<span class="gradient-text">동등한 소통</span>을 경험하세요',
+        },
+        'zh-tw': {
+          nav_problem:'問題', nav_philosophy:'理念', nav_how:'運作方式', nav_features:'功能', nav_azure:'Azure', nav_team:'團隊', nav_join:'加入會議',
+          hero_badge:'搭建溝通的橋樑', hero_quote:'「當語音使用者進入房間，溝通已經開始了；當聽障人士進入同一個房間，他們必須先為溝通的權利而努力。」',
+          hero_cta_join:'開始會議', hero_cta_learn:'了解更多', hero_sign_language:'手語', hero_speech:'語音', hero_scroll:'向下捲動',
+          stat1_label:'4.3億+', stat1_sub:'聽障人士', stat2_label:'300+', stat2_sub:'不同的手語語言', stat3_label:'單向', stat3_sub:'現有產業落差',
+          about_badge:'問題', about_desc:'全球超過4.3億人有顯著聽力損失。<br>現有會議工具並未針對雙向溝通設計。',
+          before_label:'之前', before_title:'BridgeCast 之前', after_label:'之後', after_title:'BridgeCast 之後', after_quote:'結果：聽障同事從第一天起就能平等參與',
+          philosophy_badge:'為什麼重要', myth1_title:'迷思 #1：「手語是全球通用的」', myth2_title:'迷思 #2：「手語只是一些手勢」', myth3_title:'迷思 #3：「文字字幕就夠了」', myth_busted:'破解',
+          design_title:'我們的設計回應', design_misconception:'誤解', design_response:'我們的回應',
+          how_badge:'運作方式', how_desc:'即時AI無縫連接雙向溝通，並結合虛擬人視覺化。',
+          dir1_title:'手語 → 語音', dir1_sub:'核心差異化', dir1_desc:'攝影機捕捉手語 → Uni-Sign AI辨識手勢 → 轉為文字 → Azure TTS播放語音。',
+          dir2_title:'語音 → 文字', dir2_sub:'即時字幕', dir2_desc:'麥克風收音 → Azure STT即時轉錄 → 螢幕字幕即時顯示。',
+          dir3_title:'語音 → 手語虛擬人', dir3_sub:'真正雙向', dir3_desc:'Azure STT轉錄 → Azure OpenAI轉換為ASL詞素 → 虛擬人播放手語動畫。',
+          pipeline_title:'手語辨識流程', pipeline_sub:'從攝影機輸入到文字輸出的AI流程',
+          pipe1_title:'影像擷取', pipe1_sub:'30fps 網路攝影機', pipe2_title:'姿態估計', pipe2_sub:'RTMPose', pipe3_title:'特徵提取', pipe3_sub:'ST-GCN', pipe4_title:'序列模型', pipe4_sub:'mT5 解碼器', pipe5_title:'文字生成', pipe5_sub:'自然語言', pipe6_title:'TTS輸出', pipe6_sub:'Azure 語音',
+          feat_badge:'核心功能', feat_desc:'BridgeCast的獨特之處',
+          feat_notes_title:'AI會議紀錄', feat_emotion_title:'情緒偵測', feat_avatar_title:'3D手語虛擬人', feat_avatar_detail:'可愛Q版角色即時比手語',
+          feat_emergency_title:'緊急警報', feat_diarization_title:'發言者標記', feat_dashboard_title:'無障礙儀表板', feat_safety_badge:'內容安全',
+          impact_badge:'可衡量的成效', impact_desc:'真實成果，真實效益', impact_perf_title:'效能指標',
+          perf1_label:'手語辨識', perf1_sub:'< 500ms 延遲', perf2_label:'語音轉文字', perf2_sub:'即時串流', perf3_label:'翻譯', perf3_sub:'多語言', perf4_label:'虛擬人回應', perf4_sub:'< 300ms 渲染',
+          report_title:'無障礙報告',
+          report1_label:'參與平衡', report1_sub:'語音/手語均等', report2_label:'雙向互動比率', report2_sub:'雙向皆活躍', report3_label:'回應延遲', report3_sub:'低於1秒', report4_label:'情緒資訊保留', report4_sub:'語調與表達', report5_label:'安全過濾', report5_sub:'內容審核', report6_label:'會議紀錄', report6_sub:'完整歸屬',
+          azure_badge:'15項Azure服務', azure_desc:'企業級雲端基礎設施',
+          az1_name:'語音服務', az1_desc:'即時STT與TTS', az2_name:'OpenAI服務', az2_desc:'GPT-4o會議智能', az3_name:'AI視覺', az3_desc:'手語辨識', az4_name:'通訊服務', az4_desc:'視訊房間與權杖', az5_name:'Cosmos DB', az5_desc:'會議與使用者資料', az6_name:'內容安全', az6_desc:'即時審核', az7_name:'翻譯工具', az7_desc:'多語言支援', az8_name:'監控', az8_desc:'Application Insights', az9_name:'Key Vault', az9_desc:'密鑰管理', az10_name:'Functions', az10_desc:'無伺服器處理', az11_name:'App Service', az11_desc:'Web應用程式託管', az12_name:'GPU VM', az12_desc:'NC4as T4 推論',
+          rai_badge:'負責任的AI', rai_desc2:'遵循Microsoft六大負責任AI原則',
+          rai_fairness_title:'公平性', rai_privacy_title:'隱私與安全', rai_inclusive_title:'包容性', rai_transparency_title:'透明度', rai_safety_title:'可靠性與安全', rai_linguistic_title:'語言權利',
+          scale_badge:'可擴展性', scale_desc:'超越會議——通用無障礙平台',
+          scale_primary_badge:'主要市場', scale_primary_title:'職場會議', scale_primary_desc:'內建無障礙功能的企業視訊會議',
+          scale_expansion:'擴展情境',
+          scale_class_title:'教室', scale_class_desc:'包容性教育', scale_health_title:'醫療', scale_health_desc:'醫病溝通', scale_public_title:'公共服務', scale_public_desc:'政府服務可及性', scale_job_title:'面試', scale_job_desc:'公平招聘', scale_kiosk_title:'零售服務台', scale_kiosk_desc:'客戶服務',
+          scale_tech_title:'技術架構', scale_tech1:'Azure Container自動擴展', scale_tech2:'CDN全球低延遲', scale_tech3:'Cosmos DB多區域複製', scale_tech4:'GPU VM推論擴展',
+          team_badge:'團隊', team_desc:'由BridgeCast團隊打造', team_role1:'Somi', team_role2:'Ollie', team_role3:'Tsaihsuan',
+          cta_quote:'「科技應該適應人，而不是反過來。」',
+          cta_start:'加入會議', cta_desc:'每場會議都應該是無障礙的。立即開始使用BridgeCast AI。', cta_github:'在GitHub上查看',
+          footer_event:'Microsoft Innovation Challenge 2026年3月', footer_copyright:'© 2026 BridgeCast AI. 為每個人打造無障礙溝通。',
+          footer_built:'以Azure AI打造', footer_accessibility:'無障礙優先', footer_privacy:'隱私權政策', footer_terms:'服務條款',
+          scenario_title:'範例情境', scenario_sub:'聽障同事的第一次團隊會議',
+          philosophy_myths_intro:'關於手語的常見迷思影響了我們的設計決策：',
+          philosophy_myths_conclusion:'這些洞察直接塑造了BridgeCast AI的雙向溝通方式。',
+          design_misc1:'「手語表達力不足」', design_misc2:'「所有聽障人士都會讀唇語」', design_misc3:'「科技已經解決了這個問題」',
+          // data-i18n-html 鍵 (含HTML格式)
+          hero_headline:'打破<br><span class="gradient-text">溝通障礙</span>',
+          hero_subtitle:'即時連結<strong class="text-gray-900 dark:text-white font-semibold">手語</strong>與<strong class="text-gray-900 dark:text-white font-semibold">語音</strong> &mdash; 讓每場會議真正對所有人無障礙。',
+          about_title:'仍然<span class="gradient-text">分裂</span>的世界',
+          before_item1:'默默坐著，閱讀延遲且經常<strong class="text-gray-900 dark:text-white">不準確的自動字幕</strong>',
+          before_item2:'<strong class="text-gray-900 dark:text-white">無法自然回應</strong> &mdash; 打字太慢且打斷流程',
+          before_item3:'錯過對話中的<strong class="text-gray-900 dark:text-white">幽默、緊迫感和情緒細微差異</strong>',
+          before_item4:'<strong class="text-gray-900 dark:text-white">會議紀錄中沒有他們的名字</strong> &mdash; 因為他們從未「發言」',
+          before_item5:'仍是<strong class="text-gray-900 dark:text-white">旁觀者</strong>，而非參與者',
+          after_item1:'<strong class="text-gray-900 dark:text-white">主管說話</strong> &rarr; 即時字幕 + 手語虛擬人以ASL呈現訊息',
+          after_item2:'<strong class="text-gray-900 dark:text-white">聽障同事以手語回應</strong> &rarr; AI辨識 &rarr; TTS自然播放他們的聲音',
+          after_item3:'<strong class="text-gray-900 dark:text-white">雙向流程</strong>在整個會議中持續順暢進行',
+          after_item4:'<strong class="text-gray-900 dark:text-white">情緒資訊被保留</strong> &mdash; 包含語音的語調與手語的面部表情',
+          after_item5:'<strong class="text-gray-900 dark:text-white">會議結束</strong> &rarr; 包含「Somi（手語）：…」的標註著發言者的會議紀錄、情緒標籤、待辦事項與無障礙報告',
+          philosophy_title:'理解<span class="gradient-text">手語</span>',
+          philosophy_desc:'這不是技術規格 &mdash; 這是我們整個專案的<strong class="text-gray-900 dark:text-white font-semibold">設計哲學基礎</strong>。',
+          myth1_desc:'手語不是任何人發明的。它們在聽障群體中經過數百年<strong class="text-gray-900 dark:text-white">自然形成</strong>，就像口語一樣。它們有自己的語法、句法和慣用表達。',
+          myth2_desc:'全球有<strong class="text-gray-900 dark:text-white">300多種不一樣的手語</strong>。美國手語（ASL）與英國手語（BSL）完全不同，儘管兩國都說英語。',
+          myth3_desc:'手語在結構複雜性和表達力上與口語<strong class="text-gray-900 dark:text-white">完全平等</strong>。在某些領域 &mdash; 空間關係、同時性資訊 &mdash; 它們甚至<em>更</em>具表達力。',
+          myth3_insight:'在ASL中揚起眉毛可以將陳述變成疑問 &mdash; 面部表情承載<strong class="text-gray-900 dark:text-white">語法意義</strong>。',
+          design_resp1:'<strong class="text-gray-900 dark:text-white">模組化架構</strong> &mdash; 每種手語（ASL、KSL、TSL、BSL...）都有自己的辨識模型，無需重建系統即可替換。',
+          design_resp2:'<strong class="text-gray-900 dark:text-white">平等的橋樑，非輔助工具</strong> &mdash; 手語和語音是兩種同等有效的輸入/輸出方式。兩者都不是主要的。',
+          design_resp3:'<strong class="text-gray-900 dark:text-white">雙向情緒傳遞</strong> &mdash; 我們在兩個方向都保留情緒資訊（語音的語調/音高；手語的面部表情）。',
+          how_title:'<span class="gradient-text">平等存取</span>的三個方向',
+          feat_title:'差異化<span class="gradient-text">功能</span>',
+          feat_diarization_desc:'辨識語音和手語中<strong class="text-gray-900 dark:text-white">誰說了什麼</strong>。會議紀錄因明確歸屬而更具可執行性：「Somi（手語）：…」/「Ollie（語音）：…」',
+          feat_emotion_desc:'在<strong class="text-gray-900 dark:text-white">雙向溝通</strong>中為每個發言標註情緒。',
+          feat_emergency_desc:'偵測<strong class="text-gray-900 dark:text-white">緊急語句</strong>並立即向聽障參與者發送視覺警報。',
+          feat_dashboard_desc:'即時發言比例視覺化，<strong class="text-gray-900 dark:text-white">直接證明</strong>可衡量的無障礙成效。',
+          feat_avatar_desc:'語音 &rarr; 手語動畫。真正的雙向溝通 &mdash; 聽障使用者不僅以文字接收資訊，並以其<strong class="text-gray-900 dark:text-white">習慣的溝通方式</strong>接收。',
+          feat_notes_desc:'自動生成標註著發言者的會議紀錄、情緒標籤、關鍵決策、待辦事項和量化<strong class="text-gray-900 dark:text-white">無障礙報告</strong>。',
+          impact_title:'<span class="gradient-text">證明一切</span>的數字',
+          azure_title:'由<span class="gradient-text">15個Azure服務</span>驅動',
+          rai_title:'以<span class="gradient-text">責任</span>打造',
+          rai_desc1:'無障礙與包容不是專案的附加功能 &mdash; 它們<strong class="text-gray-900 dark:text-white font-semibold">就是</strong>專案本身。',
+          rai_privacy_desc:'影像串流即時處理，預設<strong class="text-gray-900 dark:text-white">不永久儲存</strong>。使用者可控資料保留。傳輸與靜態加密。Azure Key Vault管理所有密鑰。',
+          rai_transparency_desc:'AI<strong class="text-gray-900 dark:text-white">信心分數向使用者顯示</strong>（例如：「此手語以85%信心度辨識」）。AI不確定時會清楚標示。',
+          rai_fairness_desc:'將300多種手語視為不同且獨立的自然語言。模組化設計防止文化/語言偏見。於<strong class="text-gray-900 dark:text-white">多種膚色、手語風格與光線</strong>下測試。',
+          rai_safety_desc:'Azure Content Safety於即時轉錄中<strong class="text-gray-900 dark:text-white">過濾有害內容</strong>。所有輸出自動偵測並移除不當內容。',
+          rai_inclusive_desc:'遵循Microsoft包容性設計原則。UI<strong class="text-gray-900 dark:text-white">從一開始</strong>就為無障礙溝通設計。為所有參與者提供雙向情緒傳達。',
+          rai_linguistic_desc:'手語被視為<strong class="text-gray-900 dark:text-white">具有完整語法與表達力的自然語言</strong>，而非僅為手勢簡寫。模組化架構尊重每種手語的獨特性。',
+          scale_title:'一個平台，<span class="gradient-text">多種故事</span>',
+          team_title:'認識<span class="gradient-text">開發者</span>',
+          cta_title:'體驗<span class="gradient-text">平等溝通</span>',
+        },
+      };
+
+      let currentLang = localStorage.getItem('bridgecast-lang') || 'en';
+
+      function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('bridgecast-lang', lang);
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (T[lang] && T[lang][key]) {
+            el.textContent = T[lang][key];
+          }
+        });
+        // Handle data-i18n-html (innerHTML with formatting)
+        document.querySelectorAll('[data-i18n-html]').forEach(el => {
+          const key = el.getAttribute('data-i18n-html');
+          if (T[lang] && T[lang][key]) {
+            el.innerHTML = T[lang][key];
+          }
+        });
+        // Update toggle labels
+        document.querySelectorAll('.lang-label').forEach(el => {
+          el.textContent = LANG_LABELS[lang];
+        });
+        // Update html lang
+        document.documentElement.lang = lang === 'zh-tw' ? 'zh-TW' : lang;
+      }
+
+      // Language toggle — cycle through
+      function cycleLang() {
+        const idx = LANGS.indexOf(currentLang);
+        const next = LANGS[(idx + 1) % LANGS.length];
+        setLang(next);
+      }
+
+      const LANG_FLAGS = { en: '🇺🇸', ko: '🇰🇷', 'zh-tw': '🇹🇼' };
+
+      function updateLangUI(lang) {
+        document.querySelectorAll('.lang-label').forEach(el => el.textContent = LANG_LABELS[lang]);
+      }
+
+      // Click to cycle: EN → KO → ZH-TW → EN ...
+      document.querySelectorAll('.lang-cycle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = LANGS.indexOf(currentLang);
+          const next = LANGS[(idx + 1) % LANGS.length];
+          setLang(next);
+          updateLangUI(next);
+        });
+      });
+
+      // Initialize
+      setLang(currentLang);
+      updateLangUI(currentLang);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-03-28" agent="BridgeCast" type="device">
+  <diagram id="bridgecast-final" name="BridgeCast AI Architecture">
+    <mxGraphModel dx="1000" dy="560" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE -->
+        <mxCell id="title" value="BridgeCast AI" style="text;html=1;fontSize=24;fontStyle=1;align=center;fontColor=#16A34A;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="250" y="5" width="600" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sub1" value="Inclusive Communication Hub — Real-time Bidirectional Sign ↔ Speech · 15 Azure Services" style="text;html=1;fontSize=9;align=center;fontColor=#555;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="200" y="34" width="700" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="sub2" value="ASL (139 signs + A-Z) · KSL (107 glosses + ㄱ-ㅎ) · TSL (20 signs + ㄅ-ㄩ) · Microsoft Innovation Challenge 2026" style="text;html=1;fontSize=8;align=center;fontColor=#999;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="200" y="48" width="700" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ============ VOICE → SIGN ============ -->
+        <mxCell id="flowA-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#22C55E;strokeWidth=2;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="10" y="68" width="1080" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="flowA-title" value="🗣️ Voice → 🤟 Sign (Hearing → Deaf)" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#16A34A;fontFamily=Segoe UI;align=left;" vertex="1" parent="1">
+          <mxGeometry x="20" y="72" width="350" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Hearing User -->
+        <mxCell id="a-hearing" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/identity/Users.svg;" vertex="1" parent="1">
+          <mxGeometry x="20" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-hearing-lbl" value="Hearing" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#16A34A;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="10" y="142" width="50" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Mic -->
+        <mxCell id="a-mic" value="🎤 Mic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF;strokeColor=#D1D5DB;strokeWidth=1;arcSize=12;shadow=1;fontSize=8;fontStyle=1;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="68" y="112" width="55" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- ② STT -->
+        <mxCell id="a-stt" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Speech_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="140" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-stt-l" value="② STT" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="132" y="142" width="45" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ⑦ Safety -->
+        <mxCell id="a-cs" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Content_Safety.svg;" vertex="1" parent="1">
+          <mxGeometry x="208" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-cs-l" value="⑦ Safety" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="198" y="142" width="50" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ⑮ PII -->
+        <mxCell id="a-pii" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Language_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="278" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-pii-l" value="⑮ PII" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="270" y="142" width="45" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ④ Translator -->
+        <mxCell id="a-tr" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Translator_Text.svg;" vertex="1" parent="1">
+          <mxGeometry x="348" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-tr-l" value="④ Translator" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="335" y="142" width="56" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ③ GPT-4o -->
+        <mxCell id="a-oai" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Azure_OpenAI.svg;" vertex="1" parent="1">
+          <mxGeometry x="420" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-oai-l" value="③ GPT-4o" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="408" y="142" width="54" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Sign Gloss -->
+        <mxCell id="a-gloss" value="Sign Gloss" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1F2937;strokeColor=#374151;arcSize=12;fontColor=#FFF;fontSize=8;fontStyle=1;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="478" y="113" width="70" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- 3D Avatar -->
+        <mxCell id="a-avatar" value="🤟 3D Avatar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#8B5CF6;strokeWidth=1.5;arcSize=12;fontSize=8;fontStyle=1;fontColor=#5B21B6;fontFamily=Segoe UI;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="110" width="80" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ⑭ SignalR -->
+        <mxCell id="a-sr" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/web/SignalR.svg;" vertex="1" parent="1">
+          <mxGeometry x="672" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-sr-l" value="⑭ SignalR" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="660" y="142" width="54" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Deaf User -->
+        <mxCell id="a-deaf" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/identity/Users.svg;" vertex="1" parent="1">
+          <mxGeometry x="728" y="115" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a-deaf-l" value="Deaf" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#8B5CF6;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="720" y="142" width="45" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Flow A Arrows -->
+        <mxCell id="aa0" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-hearing" target="a-mic"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="aa1" value="audio" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;fontSize=6;fontColor=#22C55E;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-mic" target="a-stt"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="aa2" value="text" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;fontSize=6;fontColor=#22C55E;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-stt" target="a-cs"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="aa3" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-cs" target="a-pii"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="aa4" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-pii" target="a-tr"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="aa5" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-tr" target="a-oai"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="aa6" value="gloss" style="rounded=1;strokeColor=#22C55E;strokeWidth=1.5;fontSize=6;fontColor=#22C55E;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-oai" target="a-gloss"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="aa7" value="animate" style="rounded=1;strokeColor=#8B5CF6;strokeWidth=1.5;fontSize=6;fontColor=#8B5CF6;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-gloss" target="a-avatar"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="aa8" style="rounded=1;strokeColor=#8B5CF6;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-avatar" target="a-sr"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="aa9" style="rounded=1;strokeColor=#8B5CF6;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a-sr" target="a-deaf"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Captions -->
+        <mxCell id="a-cap" value="💬 Captions + 🛡️ Badge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF;strokeColor=#D1D5DB;strokeWidth=1;arcSize=12;fontSize=7;fontStyle=1;fontColor=#333;fontFamily=Segoe UI;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="178" y="170" width="110" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="a-cap-arr" style="rounded=1;strokeColor=#CBD5E1;strokeWidth=1;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="a-cs" target="a-cap"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Fingerspelling note -->
+        <mxCell id="a-note" value="Fingerspelling: A-Z · ㄱ-ㅎ · ㄅ-ㄩ" style="text;html=1;fontSize=7;fontColor=#999;fontFamily=Segoe UI;align=right;" vertex="1" parent="1">
+          <mxGeometry x="530" y="150" width="200" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ============ SIGN → VOICE ============ -->
+        <mxCell id="flowB-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#F59E0B;strokeWidth=2;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="10" y="210" width="1080" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="flowB-title" value="🤟 Sign → 🗣️ Voice (Deaf → Hearing)" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#D97706;fontFamily=Segoe UI;align=left;" vertex="1" parent="1">
+          <mxGeometry x="20" y="214" width="350" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Deaf User -->
+        <mxCell id="b-deaf" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/identity/Users.svg;" vertex="1" parent="1">
+          <mxGeometry x="20" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-deaf-l" value="Deaf" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#8B5CF6;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="12" y="284" width="45" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Camera -->
+        <mxCell id="b-cam" value="📷 Camera" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF;strokeColor=#D1D5DB;strokeWidth=1;arcSize=12;shadow=1;fontSize=8;fontStyle=1;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="68" y="254" width="60" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- ⑤ Vision -->
+        <mxCell id="b-vis" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Computer_Vision.svg;" vertex="1" parent="1">
+          <mxGeometry x="148" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-vis-l" value="⑤ Vision" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="138" y="284" width="50" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ⑥ GPU VM -->
+        <mxCell id="b-gpu" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/compute/Virtual_Machine.svg;" vertex="1" parent="1">
+          <mxGeometry x="218" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-gpu-l" value="⑥ GPU VM" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="206" y="284" width="54" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Recognized -->
+        <mxCell id="b-ko" value="Recognized" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;arcSize=12;fontSize=8;fontStyle=1;fontColor=#92400E;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="275" y="255" width="70" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ⑦ Safety -->
+        <mxCell id="b-cs" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Content_Safety.svg;" vertex="1" parent="1">
+          <mxGeometry x="368" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-cs-l" value="⑦ Safety" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="358" y="284" width="50" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ⑮ PII -->
+        <mxCell id="b-pii" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Language_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="430" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-pii-l" value="⑮ PII" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="423" y="284" width="45" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ④ Translator -->
+        <mxCell id="b-tr" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Translator_Text.svg;" vertex="1" parent="1">
+          <mxGeometry x="495" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-tr-l" value="④ Translator" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="482" y="284" width="56" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ② TTS -->
+        <mxCell id="b-tts" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/ai_machine_learning/Speech_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="565" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-tts-l" value="② TTS" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="557" y="284" width="45" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ⑭ SignalR -->
+        <mxCell id="b-sr" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/web/SignalR.svg;" vertex="1" parent="1">
+          <mxGeometry x="628" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-sr-l" value="⑭ SignalR" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="618" y="284" width="50" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Hearing User -->
+        <mxCell id="b-hearing" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/identity/Users.svg;" vertex="1" parent="1">
+          <mxGeometry x="685" y="257" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b-hearing-l" value="Hearing" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#16A34A;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="675" y="284" width="50" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Flow B Arrows -->
+        <mxCell id="ba0" style="rounded=1;strokeColor=#8B5CF6;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-deaf" target="b-cam"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ba1" value="frames" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;fontSize=6;fontColor=#D97706;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-cam" target="b-vis"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="ba2" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-vis" target="b-gpu"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ba3" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-gpu" target="b-ko"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ba4" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-ko" target="b-cs"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ba5" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-cs" target="b-pii"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ba6" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-pii" target="b-tr"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ba7" value="translate" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;fontSize=6;fontColor=#D97706;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-tr" target="b-tts"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="ba8" value="voice" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;fontSize=6;fontColor=#D97706;fontStyle=1;fontFamily=Segoe UI;verticalAlign=top;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-tts" target="b-sr"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="8"/></mxGeometry></mxCell>
+        <mxCell id="ba9" style="rounded=1;strokeColor=#D97706;strokeWidth=1.5;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b-sr" target="b-hearing"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Caption badge -->
+        <mxCell id="b-cap" value="💬 Caption + 🛡️ Badge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF;strokeColor=#D1D5DB;strokeWidth=1;arcSize=12;fontSize=7;fontStyle=1;fontColor=#333;fontFamily=Segoe UI;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="338" y="312" width="110" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="b-cap-arr" style="rounded=1;strokeColor=#CBD5E1;strokeWidth=1;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="b-cs" target="b-cap"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- AI Models note -->
+        <mxCell id="b-note" value="Uni-Sign (ICLR 2025) · CTC Transformer · MediaPipe" style="text;html=1;fontSize=7;fontColor=#999;fontFamily=Segoe UI;align=right;" vertex="1" parent="1">
+          <mxGeometry x="480" y="300" width="280" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- ============ SHARED PLATFORM ============ -->
+        <mxCell id="shared-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;strokeWidth=2;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="10" y="355" width="1080" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-title" value="☁️ SHARED AZURE PLATFORM" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#3B82F6;fontFamily=Segoe UI;align=left;" vertex="1" parent="1">
+          <mxGeometry x="20" y="360" width="250" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Service icons row (vertically centered) -->
+        <mxCell id="s1" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/app_services/App_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="25" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s1l" value="① App Service" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="8" y="427" width="65" height="12" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s2" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/databases/Azure_Cosmos_DB.svg;" vertex="1" parent="1">
+          <mxGeometry x="110" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s2l" value="⑬ Cosmos DB" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="93" y="427" width="65" height="12" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s3" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
+          <mxGeometry x="195" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s3l" value="⑧ Blob Storage" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="175" y="427" width="70" height="12" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s4" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/other/Azure_Communication_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="280" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s4l" value="⑨ Comm Svc" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="265" y="427" width="60" height="12" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s5" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/compute/Function_Apps.svg;" vertex="1" parent="1">
+          <mxGeometry x="362" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s5l" value="⑩ Functions" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="348" y="427" width="58" height="12" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s6" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/security/Key_Vaults.svg;" vertex="1" parent="1">
+          <mxGeometry x="442" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s6l" value="⑪ Key Vault" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="428" y="427" width="58" height="12" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s7" value="" style="image;aspect=fixed;html=1;image=img/lib/azure2/management_governance/Monitor.svg;" vertex="1" parent="1">
+          <mxGeometry x="522" y="400" width="30" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s7l" value="⑫ Monitor" style="text;html=1;fontSize=7;fontStyle=1;align=center;fontColor=#333;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="510" y="427" width="54" height="12" as="geometry" />
+        </mxCell>
+
+        <!-- Connecting lines -->
+        <mxCell id="sl1" style="rounded=0;strokeColor=#CBD5E1;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="sl2" style="rounded=0;strokeColor=#CBD5E1;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="sl3" style="rounded=0;strokeColor=#CBD5E1;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="sl4" style="rounded=0;strokeColor=#CBD5E1;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s4" target="s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="sl5" style="rounded=0;strokeColor=#CBD5E1;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="sl6" style="rounded=0;strokeColor=#CBD5E1;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s6" target="s7"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- RIGHT PANELS -->
+        <!-- RAI -->
+        <mxCell id="rai" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=1.5;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="610" y="380" width="140" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="rai-t" value="🛡️ &lt;b&gt;Responsible AI&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:7px;color:#333&quot;&gt;• Content Safety · PII Redaction&lt;br&gt;• Fitzpatrick I-VI · WCAG 2.1 AA&lt;/font&gt;" style="text;html=1;fontSize=8;fontColor=#166534;fontFamily=Segoe UI;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="614" y="380" width="132" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- 430M+ -->
+        <mxCell id="impact" value="&lt;font style=&quot;font-size:24px;color:#0078D4&quot;&gt;&lt;b&gt;430M+&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:7px;color:#888&quot;&gt;people with hearing loss (WHO)&lt;/font&gt;" style="text;html=1;align=center;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="770" y="375" width="150" height="38" as="geometry" />
+        </mxCell>
+
+        <!-- Tech Stack -->
+        <mxCell id="tech" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#CBD5E1;strokeWidth=1;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="610" y="448" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="tech-t" value="&lt;b&gt;Tech Stack&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:7px;color:#333&quot;&gt;FastAPI · PyTorch · MediaPipe&lt;br&gt;Three.js · Azure SDK · Bicep&lt;/font&gt;" style="text;html=1;fontSize=7;fontColor=#475569;fontFamily=Segoe UI;align=left;" vertex="1" parent="1">
+          <mxGeometry x="614" y="450" width="142" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- FOOTER -->
+        <mxCell id="footer" value="&lt;b&gt;15 Azure Services:&lt;/b&gt; ① App Service · ② Speech · ③ OpenAI · ④ Translator · ⑤ AI Vision · ⑥ GPU VM · ⑦ Content Safety · ⑧ Blob · ⑨ Comm Svc · ⑩ Functions · ⑪ Key Vault · ⑫ Monitor · ⑬ Cosmos DB · ⑭ SignalR · ⑮ AI Language" style="text;html=1;fontSize=8;fontColor=#475569;fontFamily=Segoe UI;align=center;verticalAlign=middle;rounded=1;whiteSpace=wrap;fillColor=#F1F5F9;strokeColor=#CBD5E1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="520" width="1000" height="20" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

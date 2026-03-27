@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BridgeCast AI — 3D Sign Language Avatar</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Pretendard', 'system-ui', 'sans-serif'] },
+          colors: {
+            surface: { 50: '#1a1a2e', 100: '#16162a', 200: '#121226', 300: '#0e0e1f', 400: '#0a0a18', 500: '#060611' },
+            accent:  { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5' },
+            mint:    { 400: '#34d399', 500: '#10b981' },
+            coral:   { 400: '#fb7185', 500: '#f43f5e' },
+          },
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif; margin: 0; }
+
+    /* Theme variables */
+    :root {
+      --bg-primary: #f8f9fc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: rgba(26,26,46,0.5);
+      --text-muted: rgba(26,26,46,0.3);
+      --glass-bg: rgba(255,255,255,0.7);
+      --glass-border: rgba(0,0,0,0.06);
+      --glass-blur: blur(24px) saturate(1.6);
+      --input-bg: rgba(0,0,0,0.03);
+      --input-border: rgba(0,0,0,0.08);
+      --scrollbar-thumb: rgba(0,0,0,0.12);
+      --slider-bg: rgba(0,0,0,0.08);
+      --slider-border: #ffffff;
+      --glow-opacity: 0.08;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    html.dark {
+      --bg-primary: #060611;
+      --bg-secondary: #0e0e1f;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255,255,255,0.5);
+      --text-muted: rgba(255,255,255,0.3);
+      --glass-bg: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.06);
+      --glass-blur: blur(24px) saturate(1.6);
+      --input-bg: rgba(255,255,255,0.05);
+      --input-border: rgba(255,255,255,0.1);
+      --scrollbar-thumb: rgba(255,255,255,0.1);
+      --slider-bg: rgba(255,255,255,0.08);
+      --slider-border: #1a1a2e;
+      --glow-opacity: 0.12;
+      --shadow-card: none;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.4s cubic-bezier(0.16,1,0.3,1), color 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+
+    /* Gloss display */
+    .gloss-word {
+      display: inline-block;
+      padding: 4px 12px;
+      margin: 2px 4px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(99,102,241,0.08);
+      color: var(--text-muted);
+      border: 1px solid rgba(99,102,241,0.1);
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .gloss-word.active {
+      background: rgba(99,102,241,0.2);
+      color: var(--text-primary);
+      border-color: rgba(99,102,241,0.4);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(99,102,241,0.2);
+    }
+    html.dark .gloss-word.active {
+      background: rgba(99,102,241,0.3);
+      border-color: rgba(99,102,241,0.5);
+      box-shadow: 0 0 15px rgba(99,102,241,0.3);
+    }
+    .gloss-word.done {
+      background: rgba(16,185,129,0.1);
+      color: rgba(16,185,129,0.8);
+      border-color: rgba(16,185,129,0.2);
+    }
+    html.dark .gloss-word.done {
+      background: rgba(16,185,129,0.15);
+      border-color: rgba(16,185,129,0.3);
+    }
+
+    /* Status dot */
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      display: inline-block; margin-right: 6px;
+    }
+    .status-dot.ready { background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+    .status-dot.signing { background: #6366f1; box-shadow: 0 0 8px rgba(99,102,241,0.5); animation: blink 1s infinite; }
+    .status-dot.idle { background: #64748b; }
+    @keyframes blink { 50% { opacity: 0.5; } }
+
+    /* Glass card */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      transition: background 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* Demo phrase buttons */
+    .demo-phrase {
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-secondary);
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .demo-phrase:hover {
+      background: rgba(99,102,241,0.12);
+      border-color: rgba(99,102,241,0.3);
+      color: var(--text-primary);
+    }
+
+    .lang-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .lang-btn:hover {
+      border-color: rgba(99,102,241,0.3);
+    }
+    .lang-btn.active {
+      background: rgba(99,102,241,0.15);
+      border-color: rgba(99,102,241,0.4);
+      color: var(--text-primary);
+    }
+
+    /* 3D canvas glow */
+    .avatar-canvas-wrapper {
+      position: relative;
+    }
+    .avatar-canvas-wrapper::before {
+      content: '';
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241, var(--glow-opacity)) 0%, transparent 70%);
+      animation: glowPulse 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+    .avatar-canvas-wrapper canvas {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Speed control slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--slider-bg);
+      border-radius: 4px;
+      height: 4px;
+      outline: none;
+      transition: background 0.4s;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #818cf8;
+      cursor: pointer;
+      border: 2px solid var(--slider-border);
+    }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 50;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .theme-toggle:hover {
+      transform: scale(1.08);
+    }
+    .theme-toggle:active {
+      transform: scale(0.95);
+    }
+    .theme-toggle .icon-sun,
+    .theme-toggle .icon-moon { transition: opacity 0.3s, transform 0.4s cubic-bezier(0.16,1,0.3,1); position: absolute; }
+    html.dark .theme-toggle .icon-sun { opacity: 1; transform: rotate(0deg); }
+    html.dark .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg); }
+    html:not(.dark) .theme-toggle .icon-sun { opacity: 0; transform: rotate(90deg); }
+    html:not(.dark) .theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg); }
+
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center">
+
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <iconify-icon icon="solar:sun-bold" width="20" class="icon-sun text-yellow-400"></iconify-icon>
+    <iconify-icon icon="solar:moon-bold" width="20" class="icon-moon text-accent-400"></iconify-icon>
+  </button>
+
+  <!-- Main Container -->
+  <div class="w-full max-w-7xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center">
+          <iconify-icon icon="fluent:hand-wave-24-filled" width="18" class="text-white"></iconify-icon>
+        </div>
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-accent-400 to-mint-400 bg-clip-text text-transparent">
+          BridgeCast AI
+        </h1>
+      </div>
+      <p class="text-sm text-gray-400 dark:text-white/40">3D Sign Language Avatar</p>
+    </div>
+
+    <!-- Layout: Avatar + Controls -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+      <!-- Avatar Panel (3 cols) -->
+      <div class="lg:col-span-3 glass-card p-6 flex flex-col items-center">
+
+        <!-- Status Bar -->
+        <div class="flex items-center justify-between w-full mb-4">
+          <div class="flex items-center text-sm">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText" class="text-gray-500 dark:text-white/50">Ready</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-gray-400 dark:text-white/30">
+            <span>Drag to rotate</span>
+            <span>Scroll to zoom</span>
+          </div>
+        </div>
+
+        <!-- 3D Avatar Canvas -->
+        <div class="avatar-canvas-wrapper w-full" style="height: 640px;" id="avatarContainer">
+        </div>
+
+        <!-- Current Gloss Display -->
+        <div class="mt-4 min-h-[44px] flex flex-wrap items-center justify-center gap-1" id="glossDisplay">
+          <span class="text-sm text-gray-400 dark:text-white/30 italic">Enter text below to see sign language</span>
+        </div>
+      </div>
+
+      <!-- Controls Panel (2 cols) -->
+      <div class="lg:col-span-2 flex flex-col gap-4">
+
+        <!-- Text Input -->
+        <div class="glass-card p-5">
+          <label class="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-2 block">Text to Sign</label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="textInput"
+              placeholder="Type a phrase..."
+              class="flex-1 bg-black/[0.03] dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/25 focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 transition-all"
+            />
+            <button
+              id="translateBtn"
+              class="px-5 py-3 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 text-white text-sm font-semibold hover:from-accent-400 hover:to-accent-500 transition-all shadow-lg shadow-accent-500/20 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <iconify-icon icon="fluent:hand-wave-24-filled" width="16" class="mr-1"></iconify-icon>
+              Sign
+            </button>
+          </div>
+        </div>
+
+        <!-- Sign Language Selector -->
+        <div class="glass-card p-5">
+          <label class="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-3 block">Sign Language</label>
+          <div class="flex gap-2" id="langSelector">
+            <button onclick="setSignLanguage('asl')" class="lang-btn active" data-lang="asl">
+              <span class="text-lg">🇺🇸</span> <span class="text-xs font-semibold">ASL</span>
+            </button>
+            <button onclick="setSignLanguage('ksl')" class="lang-btn" data-lang="ksl">
+              <span class="text-lg">🇰🇷</span> <span class="text-xs font-semibold">KSL</span>
+            </button>
+            <button onclick="setSignLanguage('tsl')" class="lang-btn" data-lang="tsl">
+              <span class="text-lg">🇹🇼</span> <span class="text-xs font-semibold">TSL</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Speed Control -->
+        <div class="glass-card p-5">
+          <label class="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-3 block">Speed</label>
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="fluent:top-speed-20-regular" width="16" class="text-gray-400 dark:text-white/30"></iconify-icon>
+            <input type="range" id="speedSlider" min="0.3" max="2" step="0.1" value="1" class="flex-1" />
+            <span id="speedLabel" class="text-sm text-gray-500 dark:text-white/50 min-w-[36px] text-right">1.0x</span>
+          </div>
+        </div>
+
+        <!-- Expression Test -->
+        <div class="glass-card p-5">
+          <label class="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-3 block">Expression</label>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setExpr('neutral')" class="demo-phrase">Neutral</button>
+            <button onclick="setExpr('smile')" class="demo-phrase">Smile</button>
+            <button onclick="setExpr('big_smile')" class="demo-phrase">Big Smile</button>
+            <button onclick="setExpr('frown')" class="demo-phrase">Frown</button>
+            <button onclick="setExpr('sad')" class="demo-phrase">Sad</button>
+            <button onclick="setExpr('brow_raise')" class="demo-phrase">Surprised</button>
+            <button onclick="setExpr('wink')" class="demo-phrase">Wink</button>
+          </div>
+        </div>
+
+        <!-- Demo Phrases -->
+        <div class="glass-card p-5">
+          <label class="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-3 block">Demo Phrases</label>
+          <div class="flex flex-wrap gap-2" id="demoPhrases">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- API Status -->
+        <div class="glass-card p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs">
+              <div class="w-2 h-2 rounded-full" id="apiDot"></div>
+              <span class="text-gray-400 dark:text-white/40" id="apiStatus">Checking API...</span>
+            </div>
+            <span class="text-[10px] text-gray-300 dark:text-white/20" id="apiUrl"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-6 text-xs text-gray-400 dark:text-white/20">
+      Built with Three.js &mdash; BridgeCast AI Hackathon 2026
+    </div>
+  </div>
+
+  <!-- Avatar Component -->
+  <script src="avatar-component.js"></script>
+
+  <script>
+    // ================================================================
+    //  Configuration
+    // ================================================================
+    const API_BASE = (function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('api')) return params.get('api');
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:8000';
+      }
+      return window.location.origin;
+    })();
+
+    const DEMO_PHRASES_MAP = {
+      asl: [
+        'Hello, nice to meet you!',
+        'Thank you very much',
+        'I need help please',
+        'Yes I understand',
+        'What is your name?',
+        'I love you',
+        'Good morning, how are you?',
+        'Sorry, please repeat',
+      ],
+      ksl: [
+        '안녕하세요, 만나서 반갑습니다',
+        '감사합니다',
+        '도움이 필요합니다',
+        '네, 알겠습니다',
+        '이름이 뭐예요?',
+        '좋은 아침이에요',
+        '죄송합니다, 다시 말해주세요',
+        '내일 봐요, 안녕히 가세요',
+      ],
+      tsl: [
+        '你好，很高興認識你',
+        '非常感謝',
+        '我需要幫助',
+        '是的，我了解',
+        '你叫什麼名字？',
+        '早安，你好嗎？',
+        '對不起，請再說一次',
+        '明天見，再見！',
+      ],
+    };
+    const DEMO_PHRASES = DEMO_PHRASES_MAP.asl;
+
+    // ================================================================
+    //  State
+    // ================================================================
+    let avatar = null;
+    let isSigning = false;
+    let apiAvailable = false;
+    let signSpeed = 1.0;
+
+    // ================================================================
+    //  Initialization
+    // ================================================================
+    // Current sign language (can be set via postMessage from parent)
+    let currentSignLanguage = 'asl';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar();
+      initUI();
+      checkAPI();
+    });
+
+    // Listen for messages from parent (meeting-room.html iframe embedding)
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'animate-text') {
+        const text = event.data.text;
+        if (event.data.language) currentSignLanguage = event.data.language;
+        if (text) translateAndSign(text);
+      }
+    });
+
+    function initAvatar() {
+      const container = document.getElementById('avatarContainer');
+      avatar = new SignLanguageAvatar(container, {
+        controls: true,
+        shadows: true,
+      });
+    }
+
+    function setSignLanguage(lang) {
+      currentSignLanguage = lang;
+      // Update button states
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      // Update placeholder
+      const placeholders = { asl: 'Type a phrase in English...', ksl: '한국어로 입력하세요...', tsl: '請輸入中文...' };
+      document.getElementById('textInput').placeholder = placeholders[lang] || 'Type a phrase...';
+      // Refresh demo phrases
+      refreshDemoPhrases(lang);
+    }
+
+    function refreshDemoPhrases(lang) {
+      const container = document.getElementById('demoPhrases');
+      container.innerHTML = '';
+      (DEMO_PHRASES_MAP[lang] || DEMO_PHRASES_MAP.asl).forEach(phrase => {
+        const btn = document.createElement('button');
+        btn.className = 'demo-phrase';
+        btn.textContent = phrase;
+        btn.addEventListener('click', () => {
+          document.getElementById('textInput').value = phrase;
+          translateAndSign(phrase);
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function initUI() {
+      // Demo phrase buttons
+      const demoPhrases = document.getElementById('demoPhrases');
+      DEMO_PHRASES.forEach(phrase => {
+        const btn = document.createElement('button');
+        btn.className = 'demo-phrase';
+        btn.textContent = phrase;
+        btn.addEventListener('click', () => {
+          document.getElementById('textInput').value = phrase;
+          translateAndSign(phrase);
+        });
+        demoPhrases.appendChild(btn);
+      });
+
+      // Translate button
+      document.getElementById('translateBtn').addEventListener('click', () => {
+        const text = document.getElementById('textInput').value.trim();
+        if (text) translateAndSign(text);
+      });
+
+      // Enter key
+      document.getElementById('textInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const text = e.target.value.trim();
+          if (text) translateAndSign(text);
+        }
+      });
+
+      // Speed slider
+      const slider = document.getElementById('speedSlider');
+      const label = document.getElementById('speedLabel');
+      slider.addEventListener('input', () => {
+        signSpeed = parseFloat(slider.value);
+        label.textContent = signSpeed.toFixed(1) + 'x';
+      });
+
+      setStatus('ready', 'Ready');
+    }
+
+    // ================================================================
+    //  API Communication
+    // ================================================================
+    async function checkAPI() {
+      const dot = document.getElementById('apiDot');
+      const text = document.getElementById('apiStatus');
+      const url = document.getElementById('apiUrl');
+      url.textContent = API_BASE;
+
+      try {
+        const resp = await fetch(API_BASE + '/health', { method: 'GET', signal: AbortSignal.timeout(3000) });
+        if (resp.ok) {
+          apiAvailable = true;
+          dot.className = 'w-2 h-2 rounded-full bg-mint-400';
+          text.textContent = 'API Connected';
+          text.className = 'text-mint-400 text-xs';
+        } else {
+          throw new Error('Not OK');
+        }
+      } catch (e) {
+        apiAvailable = false;
+        dot.className = 'w-2 h-2 rounded-full bg-yellow-500';
+        text.textContent = 'Offline (local fallback)';
+        text.className = 'text-yellow-500/70 text-xs';
+      }
+    }
+
+    async function translateAndSign(text) {
+      if (isSigning) {
+        avatar.reset();
+        await sleep(200);
+      }
+
+      isSigning = true;
+      setStatus('signing', 'Translating...');
+
+      let glossArray = [];
+      let animationsArray = [];
+
+      if (apiAvailable) {
+        try {
+          const resp = await fetch(API_BASE + '/avatar/sign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, language: currentSignLanguage }),
+          });
+
+          if (resp.ok) {
+            const data = await resp.json();
+            glossArray = data.gloss || localGlossConvert(text);
+            animationsArray = data.animations || [];
+          } else {
+            glossArray = localGlossConvert(text);
+          }
+        } catch (e) {
+          console.warn('API call failed, using local fallback:', e.message);
+          glossArray = localGlossConvert(text);
+        }
+      } else {
+        glossArray = localGlossConvert(text);
+      }
+
+      if (glossArray.length === 0) {
+        glossArray = ['HELLO'];
+      }
+
+      // Apply speed to animations
+      const speedAdjusted = animationsArray.map(a => ({
+        ...a,
+        duration_ms: (a.duration_ms || 1000) / signSpeed,
+      }));
+
+      // Build gloss display
+      renderGlossDisplay(glossArray);
+      setStatus('signing', 'Signing...');
+
+      // Play sequence
+      await avatar.playSequence(glossArray, speedAdjusted, (idx, gloss) => {
+        highlightGloss(idx);
+      });
+
+      // Mark all done
+      markAllGlossDone();
+      isSigning = false;
+      setStatus('ready', 'Ready');
+    }
+
+    // ================================================================
+    //  Local Fallback Gloss Converter
+    // ================================================================
+    function localGlossConvert(text) {
+      // Simple word-to-gloss mapping for offline use
+      const WORD_MAP = {
+        'hello': 'HELLO', 'hi': 'HELLO', 'hey': 'HELLO',
+        'thank': 'THANK-YOU', 'thanks': 'THANK-YOU', 'thx': 'THANK-YOU',
+        'yes': 'YES', 'yeah': 'YES', 'yep': 'YES',
+        'no': 'NO', 'nope': 'NO', 'nah': 'NO',
+        'help': 'HELP',
+        'please': 'PLEASE', 'pls': 'PLEASE',
+        'sorry': 'SORRY',
+        'good': 'GOOD', 'great': 'GOOD', 'fine': 'GOOD', 'well': 'GOOD',
+        'bad': 'BAD', 'terrible': 'BAD', 'awful': 'BAD',
+        'question': 'QUESTION',
+        'agree': 'AGREE',
+        'disagree': 'DISAGREE',
+        'understand': 'UNDERSTAND', 'understood': 'UNDERSTAND',
+        'name': 'NAME',
+        'nice': 'NICE',
+        'meet': 'MEET', 'meeting': 'MEET',
+        'goodbye': 'GOODBYE', 'bye': 'GOODBYE',
+        'wait': 'WAIT',
+        'repeat': 'REPEAT',
+        'slow': 'SLOW-DOWN',
+        'love': 'I-LOVE-YOU',
+        'go': 'GO', 'going': 'GO',
+        'come': 'COME', 'coming': 'COME',
+        'want': 'WANT',
+        'need': 'NEED',
+        'like': 'LIKE',
+        'work': 'WORK', 'working': 'WORK',
+        'home': 'HOME',
+        'school': 'SCHOOL',
+        'friend': 'FRIEND', 'friends': 'FRIEND',
+        'family': 'FAMILY',
+        'i': 'I', 'me': 'I', 'myself': 'I',
+        'you': 'YOU', 'your': 'YOUR', 'yours': 'YOUR',
+        'we': 'WE', 'us': 'WE', 'our': 'WE',
+        'my': 'MY', 'mine': 'MY',
+        'what': 'WHAT',
+        'where': 'WHERE',
+        'not': 'NOT', "don't": 'NOT', "doesn't": 'NOT', "can't": 'NOT',
+        'happy': 'HAPPY', 'glad': 'HAPPY', 'joy': 'HAPPY',
+        'sad': 'SAD', 'unhappy': 'SAD',
+        'know': 'KNOW',
+        'think': 'THINK', 'thinking': 'THINK',
+        'learn': 'LEARN', 'learning': 'LEARN',
+        'have': 'HAVE', 'has': 'HAVE', 'had': 'HAVE',
+        'see': 'SEE', 'look': 'SEE', 'watch': 'SEE',
+        'finish': 'FINISH', 'done': 'FINISH', 'finished': 'FINISH',
+        'now': 'NOW',
+        'today': 'TODAY',
+        'tomorrow': 'TOMORROW',
+        'yesterday': 'YESTERDAY',
+        'people': 'PEOPLE', 'person': 'PEOPLE',
+        'deaf': 'DEAF',
+        'hearing': 'HEARING', 'hear': 'HEARING',
+        'sign': 'SIGN',
+        'language': 'LANGUAGE',
+        'world': 'WORLD',
+        'more': 'MORE',
+        'stop': 'STOP',
+        'eat': 'EAT', 'eating': 'EAT',
+        'drink': 'DRINK', 'drinking': 'DRINK',
+        'water': 'WATER',
+        'again': 'AGAIN',
+        'time': 'TIME',
+        'talk': 'TALK', 'talking': 'TALK', 'speak': 'TALK',
+        'teach': 'TEACH', 'teaching': 'TEACH',
+        'student': 'STUDENT', 'students': 'STUDENT',
+        'teacher': 'TEACHER',
+        'start': 'START', 'begin': 'START',
+        'food': 'FOOD',
+        'money': 'MONEY',
+        'can': 'CAN', 'able': 'CAN',
+        'will': 'WILL', 'shall': 'WILL',
+        'do': 'DO', 'does': 'DO', 'did': 'DO',
+        'make': 'MAKE', 'made': 'MAKE',
+        'feel': 'FEEL', 'feeling': 'FEEL',
+        'morning': 'HELLO',
+        'how': 'WHAT',
+        'are': null, 'is': null, 'am': null, 'the': null, 'a': null, 'an': null,
+        'to': null, 'of': null, 'in': null, 'on': null, 'at': null, 'for': null,
+        'and': null, 'but': null, 'or': null, 'very': null, 'much': null,
+      };
+
+      const words = text.toLowerCase().replace(/[^\w\s'-]/g, '').split(/\s+/);
+      const gloss = [];
+
+      for (const w of words) {
+        if (WORD_MAP.hasOwnProperty(w)) {
+          const g = WORD_MAP[w];
+          if (g !== null) gloss.push(g);
+        } else {
+          // Fingerspell unknown words — just use first letter as a stand-in
+          // In a full system this would trigger fingerspelling animation
+          gloss.push(w.toUpperCase());
+        }
+      }
+
+      return gloss.length > 0 ? gloss : ['HELLO'];
+    }
+
+    // ================================================================
+    //  UI Helpers
+    // ================================================================
+    function setStatus(state, text) {
+      const dot = document.getElementById('statusDot');
+      const label = document.getElementById('statusText');
+      dot.className = 'status-dot ' + state;
+      label.textContent = text;
+    }
+
+    function renderGlossDisplay(glossArray) {
+      const container = document.getElementById('glossDisplay');
+      container.innerHTML = '';
+      glossArray.forEach((g, i) => {
+        const span = document.createElement('span');
+        span.className = 'gloss-word';
+        span.textContent = g;
+        span.dataset.index = i;
+        container.appendChild(span);
+      });
+    }
+
+    function highlightGloss(activeIndex) {
+      const words = document.querySelectorAll('#glossDisplay .gloss-word');
+      words.forEach((el, i) => {
+        if (i < activeIndex) {
+          el.className = 'gloss-word done';
+        } else if (i === activeIndex) {
+          el.className = 'gloss-word active';
+        } else {
+          el.className = 'gloss-word';
+        }
+      });
+    }
+
+    function markAllGlossDone() {
+      const words = document.querySelectorAll('#glossDisplay .gloss-word');
+      words.forEach(el => {
+        el.className = 'gloss-word done';
+      });
+    }
+
+    function setExpr(name) {
+      if (avatar) avatar.setExpression(name);
+    }
+
+
+    function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    // ================================================================
+    //  Theme Toggle
+    // ================================================================
+    (function() {
+      const toggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+
+      // Load saved preference (default: dark)
+      const saved = localStorage.getItem('bridgecast-theme');
+      if (saved === 'light') {
+        html.classList.remove('dark');
+      } else {
+        html.classList.add('dark');
+      }
+
+      toggle.addEventListener('click', () => {
+        html.classList.toggle('dark');
+        const isDark = html.classList.contains('dark');
+        localStorage.setItem('bridgecast-theme', isDark ? 'dark' : 'light');
+
+        // Update Three.js scene background
+        if (avatar && avatar.scene) {
+          avatar.scene.background = new THREE.Color(isDark ? 0x0e0e1f : 0xf0f2f8);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

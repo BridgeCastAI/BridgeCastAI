@@ -1,0 +1,26 @@
+{
+  "language": "ko",
+  "tags": [
+    "sign-language",
+    "recognition",
+    "translation",
+    "korean",
+    "gloss-to-korean",
+    "ctc",
+    "transformer"
+  ],
+  "datasets": [
+    "korean-sign-language"
+  ],
+  "metrics": [
+    "wer",
+    "cer",
+    "bleu",
+    "exact_match"
+  ],
+  "model_type": "transformer",
+  "task_ids": [
+    "automatic-speech-recognition",
+    "translation"
+  ]
+}
