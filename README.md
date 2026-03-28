@@ -10,6 +10,7 @@
 [![Uni-Sign](https://img.shields.io/badge/Model-Uni--Sign%20(ICLR%202025)-purple)](https://github.com/ZechengLi19/Uni-Sign)
 [![i18n](https://img.shields.io/badge/Languages-EN%20%7C%20KO%20%7C%20ZH--TW-green)](#multilingual-support)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PDF](https://img.shields.io/badge/Deck-PDF%20Download-EC1C24?logo=adobeacrobatreader&logoColor=white)](docs/BridgeCast_AI.pdf)
 
 **Microsoft Innovation Challenge March 2026 — Inclusive Communication Hub**
 
@@ -17,7 +18,7 @@
 
 [📝 Transparency Note](docs/TRANSPARENCY_NOTE.md) · [🛡️ Responsible AI](docs/RESPONSIBLE_AI.md) · [🔧 Setup Guide](docs/SETUP.md) · [📡 API Reference](docs/API.md)
 
-> 📺 **[Demo Video](#)** · 📊 **[Presentation (PPT)](BridgeCast_AI_Final.pptx)**
+> 📺 **[Demo Video](docs/BridgeCast_AI_Demo.mp4)** · 📊 **[Presentation (PDF)](docs/BridgeCast_AI.pdf)**
 
 </div>
 
